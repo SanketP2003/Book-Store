@@ -1,0 +1,267 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
+import Alert from '../components/Alert';
+
+export default function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+
+  const [formStatus, setFormStatus] = useState<{
+    submitted: boolean;
+    success: boolean;
+    message: string;
+  }>({
+    submitted: false,
+    success: false,
+    message: ''
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Simulate form submission - in a real app, you'd call an API endpoint here
+    setFormStatus({
+      submitted: true,
+      success: true,
+      message: 'Thank you for your message! We will get back to you soon.'
+    });
+
+    // Reset form after successful submission
+    setFormData({
+      name: '',
+      email: '',
+      subject: '',
+      message: ''
+    });
+
+    // Reset success message after 5 seconds
+    setTimeout(() => {
+      setFormStatus(prev => ({
+        ...prev,
+        submitted: false
+      }));
+    }, 5000);
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto">
+      {/* Hero Section */}
+      <section className="py-12 mb-12">
+        <div className="text-center">
+          <motion.h1
+            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Contact Us
+          </motion.h1>
+          <motion.p
+            className="text-lg text-gray-600 max-w-3xl mx-auto"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            Have questions, suggestions, or just want to say hello? We'd love to hear from you.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Contact Information */}
+      <section className="mb-16">
+        <div className="grid md:grid-cols-2 gap-8">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <h2 className="text-2xl font-bold mb-6">Get In Touch</h2>
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="mt-1">
+                  <MapPin className="w-5 h-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Visit Us</h3>
+                  <p className="text-gray-600">123 Book Street, Reading Avenue</p>
+                  <p className="text-gray-600">Bookville, BK 12345</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="mt-1">
+                  <Phone className="w-5 h-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Call Us</h3>
+                  <p className="text-gray-600">(555) 123-4567</p>
+                  <p className="text-gray-600">Customer Service: (555) 765-4321</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="mt-1">
+                  <Mail className="w-5 h-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Email Us</h3>
+                  <p className="text-gray-600">info@bookstore.com</p>
+                  <p className="text-gray-600">support@bookstore.com</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-4">
+                <div className="mt-1">
+                  <Clock className="w-5 h-5 text-primary-600" />
+                </div>
+                <div>
+                  <h3 className="font-medium">Business Hours</h3>
+                  <p className="text-gray-600">Monday-Friday: 9am - 8pm</p>
+                  <p className="text-gray-600">Saturday-Sunday: 10am - 6pm</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            <h2 className="text-2xl font-bold mb-6">Send Us a Message</h2>
+
+            {formStatus.submitted && (
+              <div className="mb-6">
+                <Alert
+                  type={formStatus.success ? 'success' : 'error'}
+                  message={formStatus.message}
+                />
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm mb-1">Your Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="input w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-1">Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="input w-full"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm mb-1">Subject</label>
+                <select
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  className="input w-full"
+                  required
+                >
+                  <option value="">Select a subject</option>
+                  <option value="general">General Inquiry</option>
+                  <option value="support">Customer Support</option>
+                  <option value="feedback">Feedback</option>
+                  <option value="order">Order Question</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm mb-1">Message</label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="input w-full h-32 resize-none"
+                  required
+                ></textarea>
+              </div>
+
+              <button type="submit" className="btn flex items-center gap-2">
+                <Send size={16} />
+                Send Message
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Map Section */}
+      <section className="mb-16">
+        <h2 className="text-2xl font-bold mb-6 text-center">Find Us</h2>
+        <div className="rounded-lg overflow-hidden h-[400px] shadow-md">
+          {/* Replace with an actual map component if you have one */}
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+            <p className="text-gray-600">Interactive Map Goes Here</p>
+            {/* You could use Google Maps, Mapbox, or another map provider here */}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="mb-16 py-10 bg-gray-50 rounded-lg px-6">
+        <h2 className="text-2xl font-bold mb-8 text-center">Frequently Asked Questions</h2>
+        <div className="max-w-3xl mx-auto space-y-4">
+          {[
+            {
+              question: "What are your shipping rates?",
+              answer: "We offer free shipping on orders over $35. For orders under $35, shipping is a flat rate of $4.99 within the continental US."
+            },
+            {
+              question: "How can I track my order?",
+              answer: "Once your order ships, you'll receive a tracking number via email. You can also view your order status in your account dashboard."
+            },
+            {
+              question: "Do you offer international shipping?",
+              answer: "Yes, we ship to select countries worldwide. International shipping rates vary based on destination and order weight."
+            },
+            {
+              question: "What is your return policy?",
+              answer: "We accept returns within 30 days of delivery for books in original condition. Please contact our customer service team to initiate a return."
+            }
+          ].map((faq, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="bg-white p-4 rounded-lg shadow-sm"
+            >
+              <h3 className="font-semibold text-lg mb-2">{faq.question}</h3>
+              <p className="text-gray-600">{faq.answer}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
