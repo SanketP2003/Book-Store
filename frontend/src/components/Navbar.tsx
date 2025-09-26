@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import ThemeSwitcher from './ThemeSwitcher';
-import { motion, AnimatePresence } from 'framer-motion';
+import Button from './Button'; // Import our new Button component
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   HiOutlineBookOpen,
   HiOutlineShoppingCart,
@@ -13,12 +14,17 @@ import {
   HiOutlineX,
   HiOutlineShieldCheck,
   HiOutlineSearch,
+  HiChevronDown,
+  HiOutlineHome,
+  HiOutlineInformationCircle,
+  HiOutlineMail,
+  HiOutlinePhone,
 } from 'react-icons/hi';
 
 const navLinks = [
-  { to: '/books', text: 'Books' },
-  { to: '/about', text: 'About' },
-  { to: '/contact', text: 'Contact' },
+  { to: '/books', text: 'Books', icon: HiOutlineBookOpen },
+  { to: '/about', text: 'About', icon: HiOutlineInformationCircle },
+  { to: '/contact', text: 'Contact', icon: HiOutlineMail },
 ];
 
 const Navbar: React.FC = () => {
@@ -29,6 +35,8 @@ const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const prefersReducedMotion = useReducedMotion();
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -45,6 +53,13 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Focus search input when search bar is shown
+  useEffect(() => {
+    if (showSearch && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [showSearch]);
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -59,15 +74,90 @@ const Navbar: React.FC = () => {
     }
   };
 
+  // Handle escape key to close search
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setShowSearch(false);
+    }
+  };
+
+  // Animation variants
+  const navbarVariants = {
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3,
+      },
+    },
+    hidden: {
+      opacity: 0,
+      y: -20,
+      transition: {
+        duration: 0.3,
+      },
+    },
+  };
+
+  // Mobile menu animation variants
+  const mobileMenuVariants = {
+    open: {
+      opacity: 1,
+      height: 'auto',
+      transition: {
+        duration: 0.3,
+        staggerChildren: 0.07,
+        delayChildren: 0.1,
+      },
+    },
+    closed: {
+      opacity: 0,
+      height: 0,
+      transition: {
+        duration: 0.3,
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+        when: "afterChildren",
+      },
+    },
+  };
+
+  const menuItemVariants = {
+    open: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 25,
+      },
+    },
+    closed: {
+      opacity: 0,
+      y: 20,
+      transition: {
+        duration: 0.2,
+      },
+    },
+  };
+
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         isScrolled 
-          ? "bg-white/95 dark:bg-surface-dark/95 shadow-soft-md backdrop-blur-lg" 
-          : "bg-white dark:bg-surface-dark"
-      } border-b border-gray-100 dark:border-gray-800/50`}
+          ? "bg-surface-light/90 dark:bg-surface-dark/90 shadow-medium backdrop-blur-md" 
+          : "bg-surface-light dark:bg-surface-dark"
+      } border-b border-border-light dark:border-border-dark`}
     >
-      <div className="container-padded h-18 flex items-center justify-between">
+      {/* Skip to main content link for accessibility */}
+      <a
+        href="#main-content"
+        className="absolute top-0 left-0 -translate-y-full focus:translate-y-0 bg-primary-light text-white px-4 py-2 z-50"
+      >
+        Skip to main content
+      </a>
+
+      <div className="container mx-auto px-4 h-16 md:h-18 flex items-center justify-between">
         {/* Logo and Desktop Nav */}
         <div className="flex items-center gap-8">
           <Link
@@ -77,57 +167,81 @@ const Navbar: React.FC = () => {
           >
             <motion.span
               className="relative flex items-center justify-center w-10 h-10"
-              whileHover={{ rotate: [0, -5, 0, -5, 0] }}
+              whileHover={prefersReducedMotion ? {} : { rotate: [0, -5, 0, -5, 0] }}
               transition={{ duration: 0.5 }}
             >
-              <span className="absolute w-8 h-8 bg-gradient-to-br from-green-600 to-green-400 dark:from-green-500 dark:to-green-300 rounded-lg -rotate-6 group-hover:rotate-0 transition-transform duration-300"></span>
+              <span className="absolute w-8 h-8 bg-gradient-to-br from-green-500 to-green-300 dark:from-green-400 dark:to-green-200 rounded-lg -rotate-6 group-hover:rotate-0 transition-transform duration-300"></span>
               <HiOutlineBookOpen className="h-6 w-6 text-white z-10" />
             </motion.span>
-            <span className="text-gradient">BookStore</span>
+            <span className="bg-gradient-to-r from-primary-light to-green-600 dark:from-primary-dark dark:to-green-400 bg-clip-text text-transparent">
+              BookStore
+            </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-text_secondary-light dark:text-text_secondary-dark">
+          <nav className="hidden md:flex items-center gap-6 text-body-md font-medium text-text_secondary-light dark:text-text_secondary-dark">
             {navLinks.map(link => (
               <NavLink
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  isActive
-                    ? "text-primary-light dark:text-primary-dark font-semibold hover-underline after:w-full"
-                    : "hover:text-primary-light dark:hover:text-primary-dark transition-colors duration-200 hover-underline"
+                  `relative px-2 py-1 rounded-md transition-colors duration-200
+                  ${isActive 
+                    ? "text-primary-light dark:text-primary-dark font-semibold" 
+                    : "hover:text-primary-light dark:hover:text-primary-dark"}`
                 }
               >
-                {link.text}
+                {({ isActive }) => (
+                  <>
+                    <span className="relative z-10">{link.text}</span>
+                    {isActive && (
+                      <motion.span
+                        className="absolute inset-0 bg-primary-light/10 dark:bg-primary-dark/10 rounded-md"
+                        layoutId="navbar-active"
+                        transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
+                      />
+                    )}
+                  </>
+                )}
               </NavLink>
             ))}
           </nav>
         </div>
 
         {/* Right-side actions */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {/* Desktop Search Bar */}
-          <AnimatePresence>
+          <AnimatePresence mode="wait">
             {showSearch ? (
               <motion.form
                 initial={{ width: 0, opacity: 0 }}
                 animate={{ width: 300, opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="hidden md:block"
+                className="hidden md:flex"
                 onSubmit={handleSearchSubmit}
               >
-                <div className="search-bar">
-                  <span className="icon">
+                <div className="relative w-full">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text_secondary-light dark:text-text_secondary-dark">
                     <HiOutlineSearch size={18} />
                   </span>
                   <input
+                    ref={searchInputRef}
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
                     placeholder="Search books..."
-                    className="w-full"
+                    className="w-full py-2 pl-10 pr-4 rounded-full bg-gray-100 dark:bg-gray-800 border border-border-light dark:border-border-dark focus:outline-none focus:ring-2 focus:ring-primary-light/30 dark:focus:ring-primary-dark/30"
                     autoFocus
                   />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-text_secondary-light dark:text-text_secondary-dark hover:text-text_primary-light dark:hover:text-text_primary-dark"
+                    onClick={() => setShowSearch(false)}
+                    aria-label="Close search"
+                  >
+                    <HiOutlineX size={16} />
+                  </button>
                 </div>
               </motion.form>
             ) : (
@@ -135,7 +249,7 @@ const Navbar: React.FC = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="hidden md:flex p-2 rounded-full text-text_secondary-light dark:text-text_secondary-dark hover:text-primary-light dark:hover:text-primary-dark hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+                className="hidden md:flex p-2 rounded-full text-text_secondary-light dark:text-text_secondary-dark hover:text-primary-light dark:hover:text-primary-dark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onClick={() => setShowSearch(true)}
                 aria-label="Search"
               >
@@ -144,18 +258,24 @@ const Navbar: React.FC = () => {
             )}
           </AnimatePresence>
 
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
             <NavLink
               to="/cart"
-              className="relative p-2 rounded-full text-text_secondary-light dark:text-text_secondary-dark hover:text-primary-light dark:hover:text-primary-dark hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200"
+              className={({ isActive }) => `
+                relative p-2 rounded-full 
+                ${isActive 
+                  ? "bg-primary-light/10 dark:bg-primary-dark/10 text-primary-light dark:text-primary-dark" 
+                  : "text-text_secondary-light dark:text-text_secondary-dark hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary-light dark:hover:text-primary-dark"}
+                transition-colors duration-200
+              `}
               aria-label="Shopping Cart"
             >
-              <HiOutlineShoppingCart size={22} />
+              <HiOutlineShoppingCart size={20} />
               {user && (
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute top-0 right-0 w-5 h-5 flex items-center justify-center rounded-full text-xs font-medium text-white bg-accent-light dark:bg-accent-dark"
+                  className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center rounded-full text-xs font-medium text-white bg-accent-light dark:bg-accent-dark shadow-low"
                 >
                   1
                 </motion.span>
@@ -165,62 +285,71 @@ const Navbar: React.FC = () => {
             {user ? (
               <>
                 {user.role === 'ADMIN' && (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => navigate('/admin')}
-                    className="btn btn-sm bg-gradient-green text-white font-semibold py-1.5 px-3 rounded-lg shadow-soft"
-                    aria-label="Admin Dashboard"
+                  <Button
+                    to="/admin"
+                    size="sm"
+                    variant="secondary"
+                    icon={<HiOutlineShieldCheck size={16} />}
+                    iconPosition="left"
+                    ariaLabel="Admin Dashboard"
                   >
-                    <HiOutlineShieldCheck size={18} />
-                    <span className="ml-1">Admin</span>
-                  </motion.button>
+                    Admin
+                  </Button>
                 )}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  icon={<HiOutlineLogout size={16} />}
+                  iconPosition="left"
                   onClick={handleLogout}
-                  className="btn btn-sm btn-primary flex items-center gap-2"
-                  aria-label="Logout"
+                  ariaLabel="Logout"
                 >
-                  <HiOutlineLogout size={18} />
-                  <span>Logout</span>
-                </motion.button>
+                  Logout
+                </Button>
               </>
             ) : (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/login')}
-                className="btn btn-sm btn-primary flex items-center gap-2"
-                aria-label="Login"
+              <Button
+                to="/login"
+                size="sm"
+                variant="primary"
+                icon={<HiOutlineLogin size={16} />}
+                iconPosition="left"
+                ariaLabel="Login"
               >
-                <HiOutlineLogin size={18} />
-                <span>Login</span>
-              </motion.button>
+                Login
+              </Button>
             )}
           </div>
 
-          <div className="border-l border-gray-200 dark:border-gray-700 h-8 mx-1 hidden md:block"></div>
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
 
-          <ThemeSwitcher />
-
-          <div className="md:hidden flex gap-2">
             <button
               onClick={() => setShowSearch(prev => !prev)}
-              className="p-2 rounded-full text-text_secondary-light dark:text-text_secondary-dark hover:text-primary-light dark:hover:text-primary-dark hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
-              aria-label="Search"
+              className="md:hidden p-2 rounded-full text-text_secondary-light dark:text-text_secondary-dark hover:text-primary-light dark:hover:text-primary-dark hover:bg-gray-100 dark:hover:bg-gray-800"
+              aria-label={showSearch ? "Close search" : "Search"}
             >
               <HiOutlineSearch size={20} />
             </button>
+
             <motion.button
-              whileTap={{ scale: 0.9 }}
+              whileTap={{ scale: 0.92 }}
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-full text-text_primary-light dark:text-text_primary-dark hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors duration-200"
+              className="md:hidden p-2 rounded-full text-text_primary-light dark:text-text_primary-dark hover:bg-gray-100 dark:hover:bg-gray-800"
               aria-label={isOpen ? "Close menu" : "Open menu"}
               aria-expanded={isOpen}
             >
-              {isOpen ? <HiOutlineX size={24} /> : <HiOutlineMenu size={24} />}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={isOpen ? "close" : "open"}
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  {isOpen ? <HiOutlineX size={24} /> : <HiOutlineMenu size={24} />}
+                </motion.div>
+              </AnimatePresence>
             </motion.button>
           </div>
         </div>
@@ -233,11 +362,11 @@ const Navbar: React.FC = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden overflow-hidden border-b border-gray-100 dark:border-gray-800"
+            className="md:hidden overflow-hidden border-b border-border-light dark:border-border-dark"
           >
             <form onSubmit={handleSearchSubmit} className="p-3">
-              <div className="search-bar">
-                <span className="icon">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text_secondary-light dark:text-text_secondary-dark">
                   <HiOutlineSearch size={18} />
                 </span>
                 <input
@@ -245,7 +374,7 @@ const Navbar: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search books..."
-                  className="w-full"
+                  className="w-full py-2 pl-10 pr-4 rounded-full bg-gray-100 dark:bg-gray-800 border border-border-light dark:border-border-dark focus:outline-none focus:ring-2 focus:ring-primary-light/30 dark:focus:ring-primary-dark/30"
                   autoFocus
                 />
               </div>
@@ -258,91 +387,113 @@ const Navbar: React.FC = () => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="md:hidden absolute top-[72px] left-0 w-full bg-white dark:bg-surface-dark border-b border-gray-100 dark:border-gray-800 shadow-soft-lg overflow-hidden"
+            initial="closed"
+            animate="open"
+            exit="closed"
+            variants={mobileMenuVariants}
+            className="md:hidden overflow-hidden bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark"
           >
-            <nav className="flex flex-col items-center gap-4 p-6">
-              {navLinks.map((link, index) => (
-                <motion.div
-                  key={link.to}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="w-full"
-                >
-                  <NavLink
-                    to={link.to}
-                    onClick={() => setIsOpen(false)}
-                    className={({ isActive }) => `block text-center text-lg font-medium py-3 px-5 rounded-lg transition-colors duration-200 ${
-                      isActive 
-                        ? "text-primary-light dark:text-primary-dark bg-green-50 dark:bg-green-900/20" 
-                        : "text-text_secondary-light dark:text-text_secondary-dark hover:bg-gray-50 dark:hover:bg-gray-800"
-                    }`}
+            <div className="p-4 flex flex-col gap-4">
+              <nav className="flex flex-col gap-2">
+                {navLinks.map((link, index) => (
+                  <motion.div
+                    key={link.to}
+                    variants={menuItemVariants}
+                    custom={index}
                   >
-                    {link.text}
+                    <NavLink
+                      to={link.to}
+                      className={({ isActive }) =>
+                        `flex items-center gap-3 px-3 py-2.5 rounded-lg
+                         ${isActive 
+                          ? "bg-primary-light/10 dark:bg-primary-dark/10 text-primary-light dark:text-primary-dark font-medium" 
+                          : "text-text_secondary-light dark:text-text_secondary-dark hover:bg-gray-100 dark:hover:bg-gray-800"}`
+                      }
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <link.icon className="h-5 w-5" />
+                      <span>{link.text}</span>
+                    </NavLink>
+                  </motion.div>
+                ))}
+
+                <motion.div variants={menuItemVariants}>
+                  <NavLink
+                    to="/cart"
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 px-3 py-2.5 rounded-lg
+                       ${isActive 
+                        ? "bg-primary-light/10 dark:bg-primary-dark/10 text-primary-light dark:text-primary-dark font-medium" 
+                        : "text-text_secondary-light dark:text-text_secondary-dark hover:bg-gray-100 dark:hover:bg-gray-800"}`
+                    }
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <HiOutlineShoppingCart className="h-5 w-5" />
+                    <span>Cart</span>
+                    {user && (
+                      <span className="ml-auto px-1.5 py-0.5 rounded text-xs font-medium text-white bg-accent-light dark:bg-accent-dark">
+                        1
+                      </span>
+                    )}
                   </NavLink>
                 </motion.div>
-              ))}
-              <div className="w-full h-px bg-gray-100 dark:bg-gray-800 my-2"></div>
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.05 }}
-                className="w-full"
-              >
-                <NavLink
-                  to="/cart"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-center gap-3 text-lg font-medium py-3 px-5 rounded-lg text-text_secondary-light dark:text-text_secondary-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200"
-                >
-                  <HiOutlineShoppingCart size={22} /> Cart
-                  {user && (
-                    <span className="flex items-center justify-center w-5 h-5 rounded-full text-xs font-medium text-white bg-accent-light dark:bg-accent-dark">1</span>
-                  )}
-                </NavLink>
-              </motion.div>
+              </nav>
 
-              {/* Rest of mobile menu code */}
-              {user ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: (navLinks.length + 1) * 0.05 }}
-                  className="w-full flex flex-col gap-3 mt-2"
-                >
-                  {user.role === 'ADMIN' && (
-                    <button
-                      onClick={() => { navigate('/admin'); setIsOpen(false); }}
-                      className="w-full btn btn-primary flex items-center justify-center gap-2"
+              {/* Mobile auth buttons */}
+              <motion.div variants={menuItemVariants} className="mt-2 pt-4 border-t border-border-light dark:border-border-dark">
+                {user ? (
+                  <div className="flex flex-col gap-2">
+                    {user.role === 'ADMIN' && (
+                      <Button
+                        to="/admin"
+                        variant="secondary"
+                        icon={<HiOutlineShieldCheck size={18} />}
+                        iconPosition="left"
+                        isFullWidth
+                        onClick={() => setIsOpen(false)}
+                      >
+                        Admin Dashboard
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      icon={<HiOutlineLogout size={18} />}
+                      iconPosition="left"
+                      onClick={() => {
+                        handleLogout();
+                        setIsOpen(false);
+                      }}
+                      isFullWidth
                     >
-                      <HiOutlineShieldCheck size={20} />
-                      <span>Admin Dashboard</span>
-                    </button>
-                  )}
-                  <button
-                    onClick={handleLogout}
-                    className="w-full btn btn-primary flex items-center justify-center gap-2"
-                  >
-                    <HiOutlineLogout size={20} />
-                    <span>Logout</span>
-                  </button>
-                </motion.div>
-              ) : (
-                <motion.button
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: (navLinks.length + 1) * 0.05 }}
-                  onClick={() => { navigate('/login'); setIsOpen(false); }}
-                  className="w-full btn btn-primary flex items-center justify-center gap-2 mt-2"
-                >
-                  <HiOutlineLogin size={20} />
-                  <span>Login</span>
-                </motion.button>
-              )}
-            </nav>
+                      Logout
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      to="/login"
+                      variant="primary"
+                      icon={<HiOutlineLogin size={18} />}
+                      iconPosition="left"
+                      isFullWidth
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Login
+                    </Button>
+                    <Button
+                      to="/register"
+                      variant="outline"
+                      icon={<HiOutlineUser size={18} />}
+                      iconPosition="left"
+                      isFullWidth
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Register
+                    </Button>
+                  </div>
+                )}
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
