@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { booksApi, BookDto } from '../services/api';
 import Loader from '../components/Loader';
 import Alert from '../components/Alert';
 import BookCard from '../components/BookCard';
 import Pagination from '../components/Pagination';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   HiArrowRight,
@@ -13,7 +13,11 @@ import {
   HiOutlineChevronRight,
   HiOutlineStar,
   HiOutlineBookOpen,
-  HiOutlineUserGroup
+  HiOutlineUserGroup,
+  HiOutlineTrendingUp,
+  HiOutlineCollection,
+  HiOutlineSearch,
+  HiOutlineBookmark,
 } from 'react-icons/hi';
 
 // Featured authors data - in a real app, this would come from an API
@@ -52,31 +56,87 @@ const featuredAuthors = [
   },
 ];
 
+// Features highlights for the services section
+const features = [
+  {
+    icon: HiOutlineSearch,
+    title: "Discover New Books",
+    description: "Find your next favorite read with personalized recommendations based on your interests."
+  },
+  {
+    icon: HiOutlineBookmark,
+    title: "Save & Build Lists",
+    description: "Create reading lists, save favorites, and track books you want to read in the future."
+  },
+  {
+    icon: HiOutlineTrendingUp,
+    title: "Stay Updated",
+    description: "Get notified about new releases from your favorite authors and trending titles."
+  },
+  {
+    icon: HiOutlineCollection,
+    title: "Wide Selection",
+    description: "Access thousands of books across every genre, from classics to the latest bestsellers."
+  }
+];
+
 const HomePage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [bestsellersPage, setBestsellersPage] = useState(0);
   const size = 8;
   const navigate = useNavigate();
+  
+  // Scroll animations
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: featuresScrollProgress } = useScroll({
+    target: featuresRef,
+    offset: ["start end", "end center"]
+  });
+  
+  const featuresOpacity = useTransform(featuresScrollProgress, [0, 0.5], [0.6, 1]);
+  const featuresY = useTransform(featuresScrollProgress, [0, 0.5], [60, 0]);
 
   // Query for latest books
   const { data, isLoading, isError } = useQuery({
     queryKey: ['books', { page, size }],
     queryFn: () => booksApi.list(page, size).then(r => r.data),
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
   });
 
-  // Query for bestsellers (simulate with different sorting)
+  // Convert price value (string or number) to a number for comparison
+  const priceToNumber = (price: string | number | undefined): number => {
+    if (price === undefined || price === null) {
+      return 0;
+    }
+    // If it's already a number, return it
+    if (typeof price === 'number') {
+      return price;
+    }
+    // Try to parse the string as a float
+    const parsed = parseFloat(price);
+    // Return 0 if parsing failed, otherwise return the parsed number
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
+  // Query for bestsellers with proper number conversion for sorting
   const { data: bestsellers, isLoading: loadingBestsellers } = useQuery({
     queryKey: ['books', 'bestsellers', { page: bestsellersPage, size: 4 }],
     queryFn: () => booksApi.list(bestsellersPage, 4).then(r => r.data),
-    keepPreviousData: true,
+    placeholderData: (prev) => prev,
     select: (data) => {
-      // For demo purposes, sort by price to simulate "bestsellers"
+      if (!data || !data.content || !Array.isArray(data.content)) {
+        return data;
+      }
       return {
         ...data,
-        content: [...data.content].sort((a, b) => b.price - a.price)
+        content: [...data.content].sort((a, b) => {
+          // Use our helper function to safely convert prices to numbers
+          const priceA = priceToNumber(a.price);
+          const priceB = priceToNumber(b.price);
+          return priceB - priceA; // Sort from highest to lowest
+        })
       };
-    }
+    },
   });
 
   // Database-driven categories
@@ -103,6 +163,18 @@ const HomePage: React.FC = () => {
     },
   };
 
+  const featureVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: { 
+        delay: i * 0.1,
+        duration: 0.6
+      }
+    })
+  };
+
   // Navigation for bestsellers carousel
   const nextBestsellersPage = () => {
     if (bestsellers && bestsellersPage < bestsellers.totalPages - 1) {
@@ -117,11 +189,22 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark text-text_primary-light dark:text-text_primary-dark min-h-screen">
-      {/* Hero Section */}
-      <section className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-light/90 to-highlight-light/90 dark:from-primary-dark/90 dark:to-highlight-dark/90"></div>
-        <div className="relative container mx-auto px-4 py-16 md:py-28">
+    <div className="bg-background-light dark:bg-background-dark text-text_primary-light dark:text-text_primary-dark">
+      {/* Hero Section with green theme gradient overlay and enhanced design */}
+      <section className="relative overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMxMEI5ODEiIGZpbGwtb3BhY2l0eT0iMC40Ij48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDRjMCAyLjIxIDEuNzkgNCA0IDRzNC0xLjc5IDQtNHptLTQgMTJjLTYuNjMgMC0xMi01LjM3LTEyLTEyczUuMzctMTIgMTItMTIgMTIgNS4zNyAxMiAxMi01LjM3IDEyLTEyIDEyeiI+PC9wYXRoPjwvZz48L2c+PC9zdmc+')] bg-center"></div>
+        </div>
+        
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-green-600/95 to-green-400/95 dark:from-green-700/95 dark:to-green-500/95"></div>
+
+        {/* Decorative circles */}
+        <div className="absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-40 h-40 bg-green-300/20 rounded-full blur-3xl"></div>
+
+        <div className="relative container-padded py-16 md:py-28 min-h-[85vh] flex items-center">
           <motion.div
             className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
             variants={containerVariants}
@@ -130,247 +213,462 @@ const HomePage: React.FC = () => {
           >
             <div className="text-white space-y-6">
               <motion.div variants={itemVariants}>
+                <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium mb-4">
+                  Best Online Bookstore of 2025
+                </span>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-tight">
-                  Discover Your Next
-                  <span className="block">Favorite Book</span>
+                  Discover Your Next 
+                  <span className="block mt-2">Reading Adventure</span>
                 </h1>
               </motion.div>
 
-              <motion.p variants={itemVariants} className="text-lg md:text-xl opacity-90 max-w-lg">
+              <motion.p variants={itemVariants} className="text-lg md:text-xl opacity-95 max-w-lg">
                 Explore thousands of books on any device, from bestsellers to hidden gems, and find the stories that will keep you turning pages.
               </motion.p>
 
               <motion.div variants={itemVariants} className="pt-4 flex flex-wrap gap-4">
-                <Link to="/books" className="btn-primary inline-flex items-center gap-2 text-lg">
+                <Link 
+                  to="/books" 
+                  className="btn btn-lg bg-white text-green-600 hover:bg-green-50 inline-flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
+                  aria-label="Browse our book catalog"
+                >
                   Browse Catalog <HiArrowRight />
                 </Link>
-                <Link to="/about" className="btn-secondary bg-white/20 text-white hover:bg-white/30 border-white/30 inline-flex items-center gap-2">
+                <Link 
+                  to="/about" 
+                  className="btn btn-lg bg-white/10 text-white border border-white/30 backdrop-blur-sm hover:bg-white/20 inline-flex items-center gap-2"
+                  aria-label="Learn more about our bookstore"
+                >
                   Learn More
                 </Link>
               </motion.div>
 
-              <motion.div variants={itemVariants} className="flex items-center space-x-2 pt-6 text-white/90 text-sm">
-                <div className="flex -space-x-2">
+              <motion.div variants={itemVariants} className="flex items-center space-x-3 pt-8 text-white/90 text-sm">
+                <div className="flex -space-x-3">
                   {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="h-8 w-8 rounded-full bg-gray-300 border-2 border-white overflow-hidden">
-                      <img src={`https://randomuser.me/api/portraits/${i % 2 === 0 ? 'women' : 'men'}/${20 + i}.jpg`} alt="User" />
-                    </div>
+                    <motion.div 
+                      key={i} 
+                      className="h-10 w-10 rounded-full border-2 border-white/80 overflow-hidden shadow-md"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.8 + (i * 0.1) }}
+                    >
+                      <img 
+                        src={`https://randomuser.me/api/portraits/${i % 2 === 0 ? 'women' : 'men'}/${20 + i}.jpg`} 
+                        alt="User avatar" 
+                        className="w-full h-full object-cover"
+                        loading="lazy" 
+                      />
+                    </motion.div>
                   ))}
                 </div>
                 <span>Join <b>5,000+</b> readers discovering new books every day</span>
               </motion.div>
             </div>
 
+            {/* Animated book stack with floating animation */}
             <motion.div
               variants={itemVariants}
               className="hidden lg:flex justify-center relative"
             >
-              <div className="relative w-72 h-96">
+              <div className="relative w-80 h-96">
+                {/* Decorative elements */}
+                <div className="absolute -right-10 -top-10 w-20 h-20 bg-yellow-300/30 rounded-full blur-xl"></div>
+                <div className="absolute -left-5 -bottom-5 w-16 h-16 bg-green-400/30 rounded-full blur-lg"></div>
+
                 {/* Books stacked for visual effect */}
-                <div className="absolute left-0 top-0 transform -rotate-6 shadow-xl rounded-lg overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=387&auto=format&fit=crop" alt="Book cover" className="w-72 h-96 object-cover" />
-                </div>
-                <div className="absolute left-12 top-4 transform rotate-3 shadow-xl rounded-lg overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=387&auto=format&fit=crop" alt="Book cover" className="w-72 h-96 object-cover" />
-                </div>
-                <div className="absolute left-6 top-2 shadow-2xl rounded-lg overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=387&auto=format&fit=crop" alt="Book cover" className="w-72 h-96 object-cover" />
-                </div>
+                <motion.div 
+                  className="absolute left-0 top-4 rounded-xl overflow-hidden shadow-2xl"
+                  animate={{ rotate: [-6, -4, -6], y: [0, -5, 0] }}
+                  transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+                >
+                  <img src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=387&auto=format&fit=crop" 
+                    alt="Book cover" 
+                    className="w-72 h-96 object-cover rounded-xl shadow-lg"
+                    loading="lazy"
+                  />
+                </motion.div>
+                <motion.div 
+                  className="absolute left-16 top-0 rounded-xl overflow-hidden shadow-2xl z-10"
+                  animate={{ rotate: [3, 1, 3], y: [0, -8, 0] }}
+                  transition={{ repeat: Infinity, duration: 7, ease: "easeInOut", delay: 0.5 }}
+                >
+                  <img src="https://images.unsplash.com/photo-1543002588-bfa74002ed7e?q=80&w=387&auto=format&fit=crop" 
+                    alt="Book cover" 
+                    className="w-72 h-96 object-cover rounded-xl shadow-lg"
+                    loading="lazy"
+                  />
+                </motion.div>
+                <motion.div 
+                  className="absolute left-8 top-8 rounded-xl overflow-hidden shadow-2xl z-20"
+                  animate={{ rotate: [0, 2, 0], y: [0, -3, 0] }}
+                  transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+                >
+                  <img src="https://images.unsplash.com/photo-1532012197267-da84d127e765?q=80&w=387&auto=format&fit=crop" 
+                    alt="Book cover" 
+                    className="w-72 h-96 object-cover rounded-xl shadow-lg"
+                    loading="lazy"
+                  />
+                </motion.div>
               </div>
             </motion.div>
           </motion.div>
         </div>
+        
+        {/* Wave svg separator - enhanced with green theme */}
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden">
+          <svg className="relative block w-full h-[70px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" 
+              className="fill-background-light dark:fill-background-dark"></path>
+          </svg>
+        </div>
       </section>
 
-      <main className="container mx-auto px-4 py-12">
-        {/* Categories Section - database-driven */}
-        <section className="mb-16">
-          <motion.div
-            className="flex justify-between items-center mb-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <h2 className="text-2xl md:text-3xl font-display font-bold">Browse Categories</h2>
-            <button onClick={() => navigate('/books')} className="text-primary-light dark:text-primary-dark flex items-center gap-1 hover:underline">
-              View All <HiArrowRight />
-            </button>
-          </motion.div>
+      <main>
+        {/* Features highlight section */}
+        <motion.section 
+          ref={featuresRef}
+          style={{ opacity: featuresOpacity, y: featuresY }}
+          className="py-16"
+        >
+          <div className="container-padded">
+            <div className="text-center mb-12">
+              <span className="inline-block px-3 py-1 bg-primary-light/10 dark:bg-primary-dark/10 rounded-full text-sm font-medium text-primary-light dark:text-primary-dark mb-3">
+                Why Choose BookStore
+              </span>
+              <h2 className="text-3xl md:text-4xl font-display font-bold">Everything you need for your reading journey</h2>
+              <p className="mt-4 max-w-2xl mx-auto text-text_secondary-light dark:text-text_secondary-dark text-lg">
+                Discover a modern bookstore experience with tools designed to help you find and enjoy books that match your interests.
+              </p>
+            </div>
 
-          {catLoading && (
-            <div className="py-10"><Loader /></div>
-          )}
-
-          {catError && (
-            <Alert type="error" message="Failed to load categories. Please try again later." />
-          )}
-
-          {categories && categories.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-              {categories.map((category: string, idx: number) => (
-                <motion.button
-                  key={category}
-                  onClick={() => navigate(`/category/${encodeURIComponent(category)}`)}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.03 }}
-                  className="card card-hover text-center p-6 cursor-pointer"
-                  aria-label={`Open category ${category}`}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
+              {features.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  custom={index}
+                  variants={featureVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true, margin: "-100px" }}
+                  className="card p-6 text-center hover:shadow-soft-lg transition-all duration-300 group"
                 >
-                  <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-primary-light/10 dark:bg-primary-dark/10 flex items-center justify-center text-xl font-bold text-primary-light dark:text-primary-dark">
-                    {category.slice(0, 2).toUpperCase()}
+                  <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-gradient-to-br from-primary-light/20 to-highlight-light/20 dark:from-primary-dark/20 dark:to-highlight-dark/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <feature.icon className="h-8 w-8 text-primary-light dark:text-primary-dark" />
                   </div>
-                  <h3 className="font-medium line-clamp-1" title={category}>{category}</h3>
-                </motion.button>
+                  <h3 className="text-lg font-bold mb-2 text-text_primary-light dark:text-text_primary-dark">
+                    {feature.title}
+                  </h3>
+                  <p className="text-text_secondary-light dark:text-text_secondary-dark">
+                    {feature.description}
+                  </p>
+                </motion.div>
               ))}
             </div>
-          )}
+          </div>
+        </motion.section>
 
-          {categories && categories.length === 0 && !catLoading && !catError && (
-            <div className="py-8"><Alert message="No categories found." /></div>
-          )}
-        </section>
+        {/* Categories Section - database-driven */}
+        <section className="py-16 bg-gray-50/50 dark:bg-gray-900/20">
+          <div className="container-padded">
+            <motion.div
+              className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4 mb-12"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <div>
+                <span className="inline-block px-3 py-1 bg-secondary-light/10 dark:bg-secondary-dark/10 rounded-full text-sm font-medium text-secondary-light dark:text-secondary-dark mb-3">
+                  Categories
+                </span>
+                <h2 className="text-3xl md:text-4xl font-display font-bold">Find your genre</h2>
+                <p className="mt-2 text-text_secondary-light dark:text-text_secondary-dark max-w-lg">
+                  Explore our extensive collection organized by categories to find exactly what you're looking for.
+                </p>
+              </div>
+              <button 
+                onClick={() => navigate('/books')} 
+                className="btn btn-primary flex items-center gap-1"
+                aria-label="View all book categories"
+              >
+                View All <HiArrowRight />
+              </button>
+            </motion.div>
 
-        {/* Bestsellers Section */}
-        <section className="mb-16">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-display font-bold flex items-center gap-2">
-              <HiOutlineStar className="text-accent-light dark:text-accent-dark" />
-              Bestsellers
-            </h2>
+            {catLoading && (
+              <div className="py-20 text-center">
+                <Loader size="lg" />
+                <p className="mt-4 text-text_secondary-light dark:text-text_secondary-dark">Loading categories...</p>
+              </div>
+            )}
 
-            {bestsellers && bestsellers.totalPages > 1 && (
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={prevBestsellersPage}
-                  disabled={bestsellersPage === 0}
-                  className="p-2 rounded-full border border-gray-200 dark:border-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <HiOutlineChevronLeft size={20} />
-                </button>
-                <button
-                  onClick={nextBestsellersPage}
-                  disabled={bestsellers && bestsellersPage >= bestsellers.totalPages - 1}
-                  className="p-2 rounded-full border border-gray-200 dark:border-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  <HiOutlineChevronRight size={20} />
-                </button>
+            {catError && (
+              <Alert type="error" message="Failed to load categories. Please try again later." />
+            )}
+
+            {categories && categories.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+                {categories.map((category: string, idx: number) => (
+                  <motion.button
+                    key={category}
+                    onClick={() => navigate(`/category/${encodeURIComponent(category)}`)}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.03 }}
+                    className="card card-hover text-center p-6 cursor-pointer overflow-hidden group relative"
+                    aria-label={`Browse ${category} books`}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary-light/5 to-highlight-light/5 dark:from-primary-dark/5 dark:to-highlight-dark/5 transform scale-0 group-hover:scale-100 transition-transform duration-300 rounded-xl"></div>
+                    <div className="relative">
+                      <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-gradient-to-br from-primary-light/10 to-highlight-light/10 dark:from-primary-dark/10 dark:to-highlight-dark/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span className="text-xl font-bold text-primary-light dark:text-primary-dark">
+                          {category.slice(0, 2).toUpperCase()}
+                        </span>
+                      </div>
+                      <h3 className="font-medium line-clamp-1 group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors duration-200" title={category}>
+                        {category}
+                      </h3>
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            )}
+
+            {categories && categories.length === 0 && !catLoading && !catError && (
+              <div className="py-12 text-center">
+                <Alert message="No categories found." />
               </div>
             )}
           </div>
+        </section>
 
-          {loadingBestsellers ? (
-            <div className="py-12 text-center">
-              <Loader size="lg" />
+        {/* Bestsellers Section */}
+        <section className="py-16">
+          <div className="container-padded">
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4 mb-12">
+              <div>
+                <span className="inline-block px-3 py-1 bg-accent-light/10 dark:bg-accent-dark/10 rounded-full text-sm font-medium text-accent-light dark:text-accent-dark mb-3">
+                  Top Picks
+                </span>
+                <h2 className="text-3xl md:text-4xl font-display font-bold flex items-center gap-2">
+                  <HiOutlineStar className="text-accent-light dark:text-accent-dark hidden sm:inline" />
+                  Bestsellers
+                </h2>
+                <p className="mt-2 text-text_secondary-light dark:text-text_secondary-dark max-w-lg">
+                  Our most popular books that readers can't put down.
+                </p>
+              </div>
+
+              {bestsellers && bestsellers.totalPages > 1 && (
+                <div className="flex items-center gap-3">
+                  <motion.button
+                    onClick={prevBestsellersPage}
+                    disabled={bestsellersPage === 0}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-3 rounded-full border border-gray-200 dark:border-gray-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    aria-label="View previous bestsellers"
+                  >
+                    <HiOutlineChevronLeft size={20} />
+                  </motion.button>
+                  <motion.button
+                    onClick={nextBestsellersPage}
+                    disabled={bestsellers && bestsellersPage >= bestsellers.totalPages - 1}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-3 rounded-full border border-gray-200 dark:border-gray-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    aria-label="View more bestsellers"
+                  >
+                    <HiOutlineChevronRight size={20} />
+                  </motion.button>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-              {bestsellers?.content?.map((book: BookDto) => (
-                <BookCard key={`bestseller-${book.id}`} book={book} />
-              ))}
-            </div>
-          )}
+
+            {loadingBestsellers ? (
+              <div className="py-20 text-center">
+                <Loader size="lg" />
+                <p className="mt-4 text-text_secondary-light dark:text-text_secondary-dark">Loading bestsellers...</p>
+              </div>
+            ) : (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`bestsellers-page-${bestsellersPage}`}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8"
+                >
+                  {bestsellers?.content?.map((book: BookDto) => (
+                    <BookCard key={`bestseller-${book.id}`} book={book} />
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+            )}
+          </div>
         </section>
 
         {/* Featured Authors Section */}
-        <section className="mb-16">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-display font-bold flex items-center gap-2">
-              <HiOutlineUserGroup className="text-secondary-light dark:text-secondary-dark" />
-              Featured Authors
-            </h2>
-            <Link to="/books" className="text-primary-light dark:text-primary-dark flex items-center gap-1 hover:underline">
-              View All <HiArrowRight />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredAuthors.map((author, index) => (
-              <motion.div
-                key={author.id}
-                className="card p-6 text-center"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+        <section className="py-16 bg-gray-50/50 dark:bg-gray-900/20">
+          <div className="container-padded">
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4 mb-12">
+              <div>
+                <span className="inline-block px-3 py-1 bg-highlight-light/10 dark:bg-highlight-dark/10 rounded-full text-sm font-medium text-highlight-light dark:text-highlight-dark mb-3">
+                  Meet The Authors
+                </span>
+                <h2 className="text-3xl md:text-4xl font-display font-bold flex items-center gap-2">
+                  <HiOutlineUserGroup className="text-secondary-light dark:text-secondary-dark hidden sm:inline" />
+                  Featured Authors
+                </h2>
+                <p className="mt-2 text-text_secondary-light dark:text-text_secondary-dark max-w-lg">
+                  Get to know the minds behind your favorite stories.
+                </p>
+              </div>
+              <Link 
+                to="/books" 
+                className="btn btn-primary flex items-center gap-1"
+                aria-label="View all authors"
               >
-                <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-primary-light/20 dark:border-primary-dark/20">
-                  <img src={author.image} alt={author.name} className="w-full h-full object-cover" />
-                </div>
-                <h3 className="text-lg font-bold mb-1">{author.name}</h3>
-                <p className="text-text_secondary-light dark:text-text_secondary-dark text-sm mb-3">{author.genre}</p>
-                <div className="flex justify-center gap-4 text-sm text-text_secondary-light dark:text-text_secondary-dark">
-                  <div className="flex items-center gap-1">
-                    <HiOutlineBookOpen />
-                    <span>{author.books} books</span>
+                View All <HiArrowRight />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+              {featuredAuthors.map((author, index) => (
+                <motion.div
+                  key={author.id}
+                  className="card p-6 text-center hover:shadow-soft-lg transition-all duration-300 group"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <div className="relative mx-auto mb-6">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary-light/20 to-highlight-light/20 dark:from-primary-dark/20 dark:to-highlight-dark/20 blur-xl transform scale-75 group-hover:scale-100 transition-transform duration-300"></div>
+                    <div className="relative w-28 h-28 mx-auto rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-soft-md group-hover:scale-105 transition-transform duration-300">
+                      <img src={author.image} alt={author.name} className="w-full h-full object-cover" loading="lazy" />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <HiOutlineUserGroup />
-                    <span>{author.followers}</span>
+                  <h3 className="text-xl font-bold mb-1 group-hover:text-primary-light dark:group-hover:text-primary-dark transition-colors duration-200">
+                    {author.name}
+                  </h3>
+                  <p className="text-text_secondary-light dark:text-text_secondary-dark text-sm mb-3">
+                    {author.genre}
+                  </p>
+                  <div className="flex justify-center gap-6 text-sm text-text_secondary-light dark:text-text_secondary-dark">
+                    <div className="flex flex-col">
+                      <span className="font-bold text-text_primary-light dark:text-text_primary-dark">{author.books}</span>
+                      <span>Books</span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-text_primary-light dark:text-text_primary-dark">{author.followers}</span>
+                      <span>Followers</span>
+                    </div>
                   </div>
-                </div>
-                <button className="mt-4 w-full btn-secondary text-sm py-2">View Profile</button>
-              </motion.div>
-            ))}
+                  <button className="mt-4 w-full btn btn-outline hover:bg-primary-light/5 dark:hover:bg-primary-dark/5 group-hover:border-primary-light dark:group-hover:border-primary-dark transition-colors duration-200">
+                    View Profile
+                  </button>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Latest Books Section */}
-        <section>
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-display font-bold flex items-center gap-2">
-              <HiOutlineBookOpen className="text-primary-light dark:text-primary-dark" />
-              Latest Arrivals
-            </h2>
-          </div>
-
-          {isLoading && <Loader />}
-          {isError && <Alert message="Failed to load books. Please try again later." type="error" />}
-          {data && (
-            <>
-              <motion.div
-                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                {data.content.map((book: BookDto) => (
-                  <BookCard key={book.id} book={book} />
-                ))}
-              </motion.div>
-              <div className="mt-12 flex justify-center">
-                <Pagination
-                  currentPage={page}
-                  totalPages={data.totalPages}
-                  onPageChange={setPage}
-                />
+        <section className="py-16">
+          <div className="container-padded">
+            <motion.div
+              className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4 mb-12"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <div>
+                <span className="inline-block px-3 py-1 bg-primary-light/10 dark:bg-primary-dark/10 rounded-full text-sm font-medium text-primary-light dark:text-primary-dark mb-3">
+                  Fresh Arrivals
+                </span>
+                <h2 className="text-3xl md:text-4xl font-display font-bold">Latest Books</h2>
+                <p className="mt-2 text-text_secondary-light dark:text-text_secondary-dark max-w-lg">
+                  The newest additions to our ever-growing collection.
+                </p>
               </div>
-            </>
-          )}
+            </motion.div>
+
+            {isLoading ? (
+              <div className="py-20 text-center">
+                <Loader size="lg" />
+                <p className="mt-4 text-text_secondary-light dark:text-text_secondary-dark">Loading latest books...</p>
+              </div>
+            ) : isError ? (
+              <Alert type="error" message="Failed to load books. Please try again later." />
+            ) : (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+                  {data?.content?.map((book: BookDto) => (
+                    <BookCard key={book.id} book={book} />
+                  ))}
+                </div>
+                
+                {data && data.totalPages > 1 && (
+                  <div className="mt-12 flex justify-center">
+                    <Pagination 
+                      currentPage={page} 
+                      totalPages={data.totalPages} 
+                      onPageChange={setPage} 
+                    />
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </section>
 
-        {/* Newsletter Section */}
-        <section className="mt-24">
-          <div className="card p-8 md:p-12 bg-gradient-to-r from-primary-light/10 to-highlight-light/10 dark:from-primary-dark/10 dark:to-highlight-dark/10">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-2xl md:text-3xl font-display font-bold mb-4">
-                Subscribe to Our Newsletter
-              </h2>
-              <p className="text-text_secondary-light dark:text-text_secondary-dark mb-6">
-                Stay updated with new releases, author interviews, and exclusive deals.
-              </p>
-              <form className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  className="input-field flex-grow"
-                  required
+        {/* Call to action */}
+        <section className="py-16 bg-gradient-to-br from-primary-light/95 to-highlight-light/95 dark:from-primary-dark/95 dark:to-highlight-dark/95 text-white">
+          <div className="container-padded">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <motion.div 
+                className="space-y-6"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <h2 className="text-3xl md:text-4xl font-display font-bold">
+                  Start your reading journey today
+                </h2>
+                <p className="text-lg text-white/90 max-w-lg">
+                  Sign up now and get personalized recommendations, track your reading progress, and join a community of book lovers.
+                </p>
+                <div className="flex flex-wrap gap-4">
+                  <motion.button
+                    onClick={() => navigate('/register')}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="btn btn-lg bg-white text-primary-light hover:bg-gray-100 shadow-soft-lg"
+                  >
+                    Create Account
+                  </motion.button>
+                  <Link to="/books" className="btn btn-lg bg-white/10 border border-white/30 backdrop-blur-sm hover:bg-white/20">
+                    Browse Books
+                  </Link>
+                </div>
+              </motion.div>
+              
+              <motion.div 
+                className="hidden lg:block"
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+              >
+                <img 
+                  src="https://images.unsplash.com/photo-1513001900722-370f803f498d?w=600&auto=format&fit=crop" 
+                  alt="Person reading a book" 
+                  className="w-full h-auto rounded-2xl shadow-2xl" 
+                  loading="lazy"
                 />
-                <button
-                  type="submit"
-                  className="btn-primary whitespace-nowrap"
-                >
-                  Subscribe
-                </button>
-              </form>
+              </motion.div>
             </div>
           </div>
         </section>

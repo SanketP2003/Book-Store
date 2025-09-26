@@ -1,0 +1,180 @@
+/* Base styles for BookStore redesign with green theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lexend:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply font-sans text-text_primary-light dark:text-text_primary-dark bg-background-light dark:bg-background-dark;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-primary-light dark:ring-primary-dark ring-offset-2 ring-offset-white dark:ring-offset-background-dark;
+  }
+}
+
+@layer components {
+  /* Card Components */
+  .card {
+    @apply bg-surface-light dark:bg-surface-dark rounded-xl overflow-hidden shadow-soft-md transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply hover:shadow-soft-lg hover:-translate-y-1;
+  }
+
+  /* Button Components - Redesigned with green theme */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary-light dark:bg-primary-dark text-white hover:bg-primary-light/90 dark:hover:bg-primary-dark/90 focus:ring-primary-light/50 dark:focus:ring-primary-dark/50;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-light dark:bg-secondary-dark text-white hover:bg-secondary-light/90 dark:hover:bg-secondary-dark/90 focus:ring-secondary-light/50 dark:focus:ring-secondary-dark/50;
+  }
+
+  .btn-outline {
+    @apply border border-gray-300 dark:border-gray-600 bg-transparent hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-primary-light dark:hover:border-primary-dark text-text_primary-light dark:text-text_primary-dark;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm rounded-md;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg rounded-lg;
+  }
+
+  /* Badge Components - Enhanced with green theme */
+  .badge {
+    @apply inline-flex px-2.5 py-0.5 text-xs font-medium rounded-full;
+  }
+
+  .badge-primary {
+    @apply bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300;
+  }
+
+  .badge-secondary {
+    @apply bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300;
+  }
+
+  .badge-accent {
+    @apply bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300;
+  }
+
+  /* Form Components - Redesigned */
+  .form-input {
+    @apply w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg
+           focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark
+           focus:border-primary-light dark:focus:border-primary-dark placeholder:text-gray-400
+           dark:placeholder:text-gray-500 text-text_primary-light dark:text-text_primary-dark;
+  }
+
+  /* Styled form input with icon */
+  .input-with-icon {
+    @apply relative;
+  }
+
+  .input-with-icon input {
+    @apply pl-10;
+  }
+
+  .input-with-icon .icon {
+    @apply absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none;
+  }
+
+  .form-label {
+    @apply block mb-1.5 text-sm font-medium text-text_primary-light dark:text-text_primary-dark;
+  }
+
+  .form-select {
+    @apply w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600
+           rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark
+           focus:border-primary-light dark:focus:border-primary-dark text-text_primary-light dark:text-text_primary-dark;
+  }
+
+  /* Search bar styling */
+  .search-bar {
+    @apply relative flex items-center;
+  }
+
+  .search-bar input {
+    @apply pl-10 pr-4 py-2.5 w-full rounded-full border border-gray-300 dark:border-gray-600
+           bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark
+           focus:border-primary-light dark:focus:border-primary-dark transition-all duration-300;
+  }
+
+  .search-bar .icon {
+    @apply absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none;
+  }
+
+  /* Container with responsive padding */
+  .container-padded {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section spacing */
+  .section {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  /* Page title with green accent */
+  .page-title {
+    @apply text-3xl md:text-4xl font-display font-bold text-text_primary-light dark:text-text_primary-dark mb-6 relative;
+  }
+
+  .page-title::after {
+    @apply content-[''] absolute left-0 bottom-0 h-1 w-16 bg-green-500 dark:bg-green-400 rounded-full;
+  }
+
+  /* Section title with accent */
+  .section-title {
+    @apply text-2xl md:text-3xl font-display font-bold mb-2;
+  }
+
+  .section-subtitle {
+    @apply text-text_secondary-light dark:text-text_secondary-dark mb-8;
+  }
+
+  /* Grid layouts */
+  .grid-cards {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+}
+
+/* Subtle animations for interactions */
+@layer utilities {
+  .animate-hover-up {
+    @apply transition-transform duration-200 hover:-translate-y-1;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-green-600 to-green-400 dark:from-green-500 dark:to-green-300 bg-clip-text text-transparent;
+  }
+
+  .bg-gradient-green {
+    @apply bg-gradient-to-r from-green-600 to-green-400 dark:from-green-500 dark:to-green-300;
+  }
+
+  .shadow-hover {
+    @apply transition-shadow duration-200 hover:shadow-soft-lg;
+  }
+
+  /* Green horizontal underline animation */
+  .hover-underline {
+    @apply relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary-light dark:after:bg-primary-dark after:transition-all after:duration-300 hover:after:w-full;
+  }
+}

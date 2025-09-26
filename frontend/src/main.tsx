@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { AuthProvider } from './contexts/AuthContext'
 import App from './App'
-import './index.css' // Changed from './styles/index.css' to import the file with actual Tailwind styles
+import './styles/global.css' // Updated to import our new global CSS file with enhanced design system
 
 const queryClient = new QueryClient()
 
