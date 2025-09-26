@@ -86,7 +86,7 @@ apiClient.interceptors.response.use(
       }
 
       // Add request path for debugging
-      apiError.path = error.config?.url;
+      apiError.path = error.config?.url ?? '';
     } else if (error.request) {
       // Request was made but no response received (network error)
       apiError.message = 'Network error. Please check your connection.';

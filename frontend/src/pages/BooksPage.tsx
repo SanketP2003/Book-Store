@@ -69,10 +69,10 @@ const BooksPage: React.FC = () => {
   }, [debouncedQuery, selectedGenre, selectedSort]);
 
   // Query for books with filters
-  const { data, isLoading, isError } = useQuery({
+  const { data = { content: [] }, isLoading, isError } = useQuery<{content: BookDto[], totalPages: number}>({
     queryKey: ['books', { page, pageSize, search: debouncedQuery, genre: selectedGenre, sort: selectedSort }],
     queryFn: () => booksApi.list(page, pageSize).then(r => r.data),
-    keepPreviousData: true,
+    staleTime: 60000, // Use staleTime instead of keepPreviousData
     select: (data) => {
       let filtered = [...data.content];
 

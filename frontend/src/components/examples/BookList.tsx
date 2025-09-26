@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { bookService } from '../services';
-import { BookDto, PageResponse } from '../types/api';
+import { bookService } from '../../services';
+import { BookDto, PageResponse } from '../../types/api';
 
 /**
  * Example BookList Component
@@ -61,12 +61,12 @@ const BookList = () => {
 
       {/* Book list */}
       <div className="books-grid">
-        {booksPage.content.map((book) => (
+        {booksPage.content.map((book: BookDto) => (
           <div key={book.id} className="book-card">
             <h3>{book.title}</h3>
             <p>By {book.author}</p>
             <p>{book.description}</p>
-            <div className="book-price">${typeof book.price === 'number' ? book.price.toFixed(2) : book.price}</div>
+            <div className="book-price">${typeof book.price === 'string' ? parseFloat(book.price).toFixed(2) : book.price}</div>
           </div>
         ))}
       </div>

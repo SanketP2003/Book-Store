@@ -21,8 +21,8 @@ export default function BookManagement() {
     isbn: '',
     description: '',
     genre: '',
-    price: 0,
-    originalPrice: 0,
+    price: '0',
+    originalPrice: '0',
     stock: 0,
     image: ''
   });
@@ -68,8 +68,8 @@ export default function BookManagement() {
       isbn: '',
       description: '',
       genre: '',
-      price: 0,
-      originalPrice: 0,
+      price: '0',
+      originalPrice: '0',
       stock: 0,
       image: ''
     });
@@ -113,10 +113,18 @@ export default function BookManagement() {
 
     // Handle numeric values
     if (name === 'price' || name === 'originalPrice' || name === 'stock') {
-      setFormData(prev => ({
-        ...prev,
-        [name]: parseFloat(value) || 0
-      }));
+      if (name === 'stock') {
+        setFormData(prev => ({
+          ...prev,
+          [name]: parseInt(value) || 0
+        }));
+      } else {
+        // Price and originalPrice should be strings
+        setFormData(prev => ({
+          ...prev,
+          [name]: value
+        }));
+      }
     } else {
       setFormData(prev => ({
         ...prev,
@@ -165,8 +173,8 @@ export default function BookManagement() {
       else {
         updatedBook = await bookService.createBook(formData as BookDto);
 
-        // If there's an image to upload
-        if (imageFile) {
+        // If there's an image to upload and we have a valid book ID
+        if (imageFile && updatedBook && updatedBook.id) {
           updatedBook = await bookService.uploadBookImage(updatedBook.id, imageFile);
         }
 
@@ -333,7 +341,7 @@ export default function BookManagement() {
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
-                              onClick={() => handleDelete(book.id)}
+                              onClick={() => book.id && handleDelete(book.id)}
                               className="text-error-light dark:text-error-dark hover:text-error-light/80 dark:hover:text-error-dark/80"
                             >
                               <HiOutlineTrash size={18} />

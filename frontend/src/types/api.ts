@@ -1,10 +1,32 @@
-/**
- * API Type Definitions
- * This file contains all TypeScript interfaces for the API data objects
- * matching the Spring Boot backend DTOs
- */
+// Import and define BookDto directly instead of re-exporting
+export interface BookDto {
+  id: number;
+  title: string;
+  author: string;
+  isbn: string;
+  description: string;
+  genre: string;
+  stock: number;
+  image: string;
+  price: string;
+  originalPrice: string;
+}
 
-// Authentication Types
+// Generic response wrapper for paginated data
+export interface PageResponse<T> {
+  content: T[];
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+  };
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+  first: boolean;
+  empty: boolean;
+}
+
+// Auth related types
 export interface LoginRequest {
   email: string;
   password: string;
@@ -16,76 +38,21 @@ export interface UserRegistrationRequest {
   password: string;
 }
 
-export interface UserDto {
-  id: number;
-  username: string;
-  email: string;
-  role: string;
-}
-
 export interface AuthResponse {
   token: string;
   user: UserDto;
 }
 
-// Book Types
-export interface BookDto {
-  id?: number;
-  title: string;
-  author: string;
-  isbn: string;
-  description: string;
-  genre: string;
-  stock: number;
-  image?: string;
-  price: number | string;
-  originalPrice?: number | string;
+// API Error type
+export interface ApiError {
+  status: number;
+  message: string;
+  timestamp?: string;
+  path?: string;
+  details?: any[];
 }
 
-export interface PageResponse<T> {
-  content: T[];
-  pageable: {
-    pageNumber: number;
-    pageSize: number;
-  };
-  totalElements: number;
-  totalPages: number;
-  last: boolean;
-  size: number;
-  number: number;
-  first: boolean;
-  numberOfElements: number;
-  empty: boolean;
-}
-
-// Cart Types
-export interface CartAddRequest {
-  bookId: number;
-  quantity: number;
-}
-
-export interface CartItemDto {
-  id: number;
-  bookId: number;
-  title: string;
-  quantity: number;
-  price: string | number;
-  image?: string;
-}
-
-export interface CartDto {
-  items: CartItemDto[];
-  total: string | number;
-}
-
-// Order Types
-export interface OrderItemDto {
-  id: number;
-  quantity: number;
-  price: string | number;
-  book: BookDto;
-}
-
+// Order related types
 export enum OrderStatus {
   PENDING = 'PENDING',
   PROCESSING = 'PROCESSING',
@@ -94,24 +61,67 @@ export enum OrderStatus {
   CANCELLED = 'CANCELLED'
 }
 
-export interface OrderDto {
-  id: number;
-  orderDate: string;
-  status: OrderStatus | string;
-  totalAmount: string | number;
-  userId: number;
-  orderItems: OrderItemDto[];
-}
-
 export interface UpdateOrderStatusRequest {
   status: OrderStatus | string;
 }
 
-// Error Handling
-export interface ApiError {
-  status: number;
-  message: string;
-  timestamp?: string;
-  path?: string;
-  details?: string[];
+export interface OrderItem {
+  id: number;
+  bookId: number;
+  title: string;
+  author: string;
+  quantity: number;
+  price: number;
+  image?: string;
+}
+
+export interface Order {
+  id: number;
+  userId: number;
+  items: OrderItem[];
+  total: number;
+  status: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+// OrderDto type for API responses
+export interface OrderDto extends Order {
+  items: OrderItem[];
+}
+
+// Cart related types
+export interface CartAddRequest {
+  bookId: number;
+  quantity: number;
+}
+
+export interface CartItem {
+  id: number;
+  bookId: number;
+  title: string;
+  author: string;
+  quantity: number;
+  price: number;
+  image?: string;
+}
+
+export type CartItemDto = CartItem;
+
+export interface CartDto {
+  id: number;
+  userId: number;
+  items: CartItem[];
+  total: number;
+}
+
+// User related types
+export interface UserDto {
+  id: number;
+  username: string;
+  email: string;
+  password?: string; // Adding this to fix UserManagement error
+  role: string;
+  createdAt: string;
+  updatedAt?: string;
 }

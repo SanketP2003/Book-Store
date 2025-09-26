@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ordersApi } from '@/services/api';
 import Loader from '@/components/Loader';
@@ -52,9 +52,15 @@ export default function OrderManagement() {
   // Fetch all orders
   const { data, isLoading, isError } = useQuery({
     queryKey: ['adminOrders'],
-    queryFn: () => ordersApi.all().then(r => r.data),
-    onError: (err) => console.error('Error fetching orders:', err)
+    queryFn: () => ordersApi.all().then(r => r.data)
   });
+
+  // Handle error logging separately
+  useEffect(() => {
+    if (isError) {
+      console.error('Error fetching orders');
+    }
+  }, [isError]);
 
   // Update order status mutation
   const updateStatusMutation = useMutation({
@@ -131,7 +137,7 @@ export default function OrderManagement() {
   }
 
   // Empty state
-  const orders: Order[] = data || [];
+  const orders = (data || []) as unknown as Order[];
   if (orders.length === 0) {
     return (
       <div className="card p-6 text-center">
@@ -251,7 +257,7 @@ export default function OrderManagement() {
                                     <td className="px-4 py-2">
                                       <div className="flex items-center gap-2">
                                         <img
-                                          src={imageUrl(item.image)}
+                                          src={item.image ? imageUrl(item.image) : '/placeholder-image.jpg'}
                                           alt={item.title}
                                           className="w-8 h-10 object-cover rounded"
                                         />

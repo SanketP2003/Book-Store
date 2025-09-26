@@ -91,7 +91,8 @@ export default function OrdersPage() {
   if (isLoading) return <Loader label="Loading your orders..." />
   if (isError) return <div className="page-container"><Alert message="Failed to load orders" type="error" /></div>
 
-  const orders: Order[] = data || []
+  // Type cast the data to Order[]
+  const orders = (data || []) as unknown as Order[];
 
   return (
     <div className="page-container py-8">
@@ -233,7 +234,7 @@ export default function OrdersPage() {
                           <div key={item.id} className="flex items-center gap-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
                             <Link to={`/books/${item.bookId}`}>
                               <img
-                                src={imageUrl(item.image)}
+                                src={item.image ? imageUrl(item.image) : '/placeholder-image.jpg'}
                                 alt={item.title}
                                 className="w-12 h-16 object-cover rounded shadow-sm"
                               />

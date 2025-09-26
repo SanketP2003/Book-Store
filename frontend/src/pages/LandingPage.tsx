@@ -164,7 +164,7 @@ export default function LandingPage() {
                     <h3 className="font-medium text-gray-900 group-hover:text-primary-600 line-clamp-1">{book.title}</h3>
                     <p className="text-sm text-gray-500 line-clamp-1">{book.author}</p>
                     <p className="text-sm font-medium mt-1">
-                      ${typeof book.price === 'number' ? book.price.toFixed(2) : book.price}
+                      ${typeof book.price === 'string' ? parseFloat(book.price).toFixed(2) : book.price}
                     </p>
                   </Link>
                 </motion.div>

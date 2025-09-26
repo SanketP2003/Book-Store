@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cartApi, ordersApi } from '../services/api';
 import Loader from '../components/Loader';
@@ -40,9 +40,15 @@ const CartPage: React.FC = () => {
       return failureCount < 2;
     },
     staleTime: 30000,
-    cacheTime: 60000,
-    onError: (err) => console.error('Error fetching cart:', err)
+    // Remove cacheTime and onError as they're causing TypeScript errors
   });
+
+  // Log errors separately instead of in the query config
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching cart:', error);
+    }
+  }, [error]);
 
   // Update cart item quantity
   const updateMutation = useMutation({
@@ -269,7 +275,7 @@ const CartPage: React.FC = () => {
                       {formatCurrency(item.price)} each
                     </p>
                     <p className="text-primary-light dark:text-primary-dark font-semibold">
-                      Subtotal: {formatCurrency(item.price * item.quantity)}
+                      Subtotal: {formatCurrency(Number(item.price) * item.quantity)}
                     </p>
                   </div>
 

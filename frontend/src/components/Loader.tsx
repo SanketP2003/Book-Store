@@ -22,7 +22,7 @@ const Loader: React.FC<LoaderProps> = ({
   color,
 }) => {
   // Convert string sizes to pixels
-  let sizeInPixels = size;
+  let sizeInPixels: number = 24; // Default to medium size
   if (typeof size === 'string') {
     switch (size) {
       case 'sm':
@@ -37,6 +37,8 @@ const Loader: React.FC<LoaderProps> = ({
       default:
         sizeInPixels = 24;
     }
+  } else if (typeof size === 'number') {
+    sizeInPixels = size;
   }
 
   // Determine container classes

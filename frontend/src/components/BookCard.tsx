@@ -57,9 +57,11 @@ const BookCard: React.FC<BookCardProps> = ({
     ? Math.round(100 - ((priceValue / originalPriceValue) * 100))
     : null;
 
-  // Generate rating display - in a real app, this would come from the API
-  const rating = book.rating || ((Math.random() * 2) + 3).toFixed(1); // Rating between 3.0-5.0
-  const ratingValue = typeof rating === 'string' ? parseFloat(rating) : rating;
+  // Generate rating display - using a fixed value since rating is not in BookDto
+  // In a real app, you would either add the rating to the BookDto type
+  // or fetch ratings separately
+  const randomRating = ((Math.random() * 2) + 3).toFixed(1); // Random rating between 3.0-5.0
+  const ratingValue = parseFloat(randomRating);
 
   // Animation variants
   const cardVariants = {
@@ -339,7 +341,7 @@ const BookCard: React.FC<BookCardProps> = ({
             ))}
           </div>
           <span className="ml-2 text-body-sm font-medium text-text_secondary-light dark:text-text_secondary-dark">
-            ({rating})
+            ({randomRating})
           </span>
         </div>
 

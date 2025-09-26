@@ -16,6 +16,16 @@ export const userService = {
   },
 
   /**
+   * Create a new user (admin only)
+   * @param userData User data with password
+   * @returns Promise with created user
+   */
+  createUser: async (userData: Partial<UserDto> & { password: string }): Promise<UserDto> => {
+    const response = await apiClient.post<UserDto>('/api/users', userData);
+    return response.data;
+  },
+
+  /**
    * Update a user (admin only)
    * @param id User ID
    * @param userData Updated user information

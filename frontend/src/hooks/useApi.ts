@@ -84,7 +84,7 @@ export function useUpdateBook() {
   return useMutation({
     mutationFn: ({ id, bookData }: { id: number; bookData: BookDto }) =>
       bookService.updateBook(id, bookData),
-    onSuccess: (data) => {
+    onSuccess: (data: BookDto) => {
       queryClient.invalidateQueries({ queryKey: ['books'] });
       queryClient.invalidateQueries({ queryKey: ['book', data.id] });
     },
