@@ -8,7 +8,7 @@ import { ApiError } from '../types/api';
 
 // Create an axios instance with our API URL from .env
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
