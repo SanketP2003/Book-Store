@@ -8,7 +8,7 @@ import { ApiError } from '../types/api';
 
 // Create an axios instance with our API URL from .env
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL || 'https://book-store-backend-8880.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
