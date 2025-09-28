@@ -12,5 +12,9 @@ export default defineConfig({
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
         }
+    },
+    build: {
+        // Increase limit to suppress warnings for our main bundle size
+        chunkSizeWarningLimit: 1500
     }
 });

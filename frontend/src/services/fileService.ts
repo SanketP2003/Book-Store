@@ -29,7 +29,7 @@ export const fileService = {
    * @returns Complete URL to access the file
    */
   getFileUrl: (filename: string): string => {
-    const baseUrl = import.meta.env.REACT_APP_API_URL || 'http://localhost:8080';
+    const baseUrl = import.meta.env.VITE_API_URL || 'https://book-store-backend-8880.onrender.com';
     return `${baseUrl}/api/files/${filename}`;
   }
 };

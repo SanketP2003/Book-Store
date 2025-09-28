@@ -9,9 +9,8 @@ export const formatDate = (value: string) => new Date(value).toLocaleString()
 
 export const imageUrl = (path: string) => {
   if (!path) return ''
-  const base = (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8080'
+  const base = (import.meta as any).env.VITE_API_URL || 'https://book-store-backend-8880.onrender.com'
   // if already absolute URL
   if (/^https?:\/\//i.test(path)) return path
   return `${base}/api/files/${path}`
 }
-

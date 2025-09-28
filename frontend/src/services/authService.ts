@@ -53,7 +53,7 @@ export const authService = {
    * @returns Boolean indicating authentication status
    */
   isAuthenticated: (): boolean => {
-    return !!localStorage.getItem('auth_token');
+    return !!localStorage.getItem('token');
   }
 };
 

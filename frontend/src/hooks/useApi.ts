@@ -121,7 +121,7 @@ export function useCart() {
     queryKey: ['cart'],
     queryFn: () => cartService.getCart(),
     // Don't fetch cart if user is not authenticated
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!localStorage.getItem('token'),
   });
 }
 
@@ -176,7 +176,7 @@ export function useUserOrders() {
   return useQuery({
     queryKey: ['orders', 'user'],
     queryFn: () => orderService.getUserOrders(),
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!localStorage.getItem('token'),
   });
 }
 
@@ -184,7 +184,7 @@ export function useAllOrders() {
   return useQuery({
     queryKey: ['orders', 'all'],
     queryFn: () => orderService.getAllOrders(),
-    enabled: !!localStorage.getItem('auth_token'),
+    enabled: !!localStorage.getItem('token'),
   });
 }
 

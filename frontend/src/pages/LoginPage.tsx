@@ -8,7 +8,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { HiOutlineMail, HiOutlineLockClosed, HiOutlineLogin, HiOutlineArrowSmRight, HiOutlineBookOpen } from 'react-icons/hi';
 
-const API_BASE_URL = (import.meta as any).env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'https://book-store-backend-8880.onrender.com';
 
 const LoginPage: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<LoginRequest>();
