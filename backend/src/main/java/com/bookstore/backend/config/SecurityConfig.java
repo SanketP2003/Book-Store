@@ -56,18 +56,22 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers(HttpMethod.POST, "/api/auth/register", "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll() // Allow public access to view files
-                        .requestMatchers(HttpMethod.GET, "/api/books", "/api/books/**").permitAll()
-                        
+                        .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
+
+                        // Make the book-related rules more specific and group them together
+                        .requestMatchers(HttpMethod.GET, "/api/books", "/api/books/**").permitAll() // GET is public
+                        .requestMatchers(HttpMethod.POST, "/api/books").hasRole("ADMIN")           // POST is for Admins
+                        .requestMatchers(HttpMethod.PUT, "/api/books/**").hasRole("ADMIN")         // PUT is for Admins
+                        .requestMatchers(HttpMethod.DELETE, "/api/books/**").hasRole("ADMIN")   // DELETE is for Admins
+
                         // Admin endpoints
                         .requestMatchers(HttpMethod.POST, "/api/files/upload").hasRole("ADMIN")
-                        .requestMatchers("/api/books/**").hasRole("ADMIN")
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
-                        
+
                         // User endpoints
                         .requestMatchers("/api/orders/me", "/api/orders/checkout").hasRole("USER")
                         .requestMatchers("/api/cart/**").hasRole("USER")
-                        
+
                         // All other requests must be authenticated
                         .anyRequest().authenticated()
                 );
