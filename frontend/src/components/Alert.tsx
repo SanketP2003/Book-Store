@@ -53,117 +53,57 @@ const alertConfig = {
 };
 
 const Alert: React.FC<AlertProps> = ({
-  type = 'error',
+  type = 'info',
   message,
   className = '',
   onClose,
-  duration = null,
-  isVisible = true
+  duration = 4000,
+  isVisible = true,
 }) => {
+  const [visible, setVisible] = useState(isVisible);
+
+  useEffect(() => {
+    if (duration && visible) {
+      const timer = setTimeout(() => {
+        setVisible(false);
+        if (onClose) onClose();
+      }, duration);
+      return () => clearTimeout(timer);
+    }
+  }, [duration, visible, onClose]);
+
   const config = alertConfig[type];
   const Icon = config.icon;
-  const [remainingTime, setRemainingTime] = useState(100);
-  const [shouldRender, setShouldRender] = useState(isVisible);
-
-  // Handle auto-dismiss countdown
-  useEffect(() => {
-    if (!duration || !isVisible) return;
-
-    const startTime = Date.now();
-    const endTime = startTime + duration;
-
-    const timer = setInterval(() => {
-      const now = Date.now();
-      const remaining = Math.max(0, endTime - now);
-      const percentage = (remaining / duration) * 100;
-
-      setRemainingTime(percentage);
-
-      if (percentage <= 0 && onClose) {
-        clearInterval(timer);
-        onClose();
-      }
-    }, 50);
-
-    return () => clearInterval(timer);
-  }, [duration, onClose, isVisible]);
-
-  // Track visibility for animation
-  useEffect(() => {
-    if (isVisible) {
-      setShouldRender(true);
-    }
-  }, [isVisible]);
-
-  // Animation variants
-  const alertVariants = {
-    hidden: {
-      opacity: 0,
-      y: -20,
-      scale: 0.95,
-      transition: { duration: 0.2 }
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 400,
-        damping: 25
-      }
-    },
-    exit: {
-      opacity: 0,
-      y: -20,
-      scale: 0.95,
-      transition: { duration: 0.2 }
-    }
-  };
-
-  const handleClose = () => {
-    setShouldRender(false);
-    if (onClose) setTimeout(onClose, 200); // Delay onClose until after exit animation
-  };
 
   return (
-    <AnimatePresence onExitComplete={() => setShouldRender(false)}>
-      {shouldRender && isVisible && (
+    <AnimatePresence>
+      {visible && (
         <motion.div
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          variants={alertVariants}
-          className={`${config.bgClass} ${config.borderClass} p-4 rounded-lg shadow-medium flex items-start space-x-4 relative overflow-hidden ${className}`}
+          initial={{ y: 30, opacity: 0, scale: 0.95 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          exit={{ y: 30, opacity: 0, scale: 0.95 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+          className={`relative flex items-start gap-3 px-5 py-4 rounded-xl shadow-high backdrop-blur-md ${config.bgClass} ${config.borderClass} ${className}`}
           role="alert"
         >
-          <div className="flex-shrink-0 mt-0.5">
-            <Icon className={`h-5 w-5 ${config.iconClass}`} />
-          </div>
-
-          <div className="flex-1">
-            <p className={`${config.textClass} text-body-md`}>
-              {message}
-            </p>
-          </div>
-
+          <span className={`mt-1 ${config.iconClass}`}><Icon size={24} /></span>
+          <div className={`flex-1 ${config.textClass} font-medium text-base`}>{message}</div>
           {onClose && (
             <button
-              onClick={handleClose}
-              className={`flex-shrink-0 ml-2 p-1 rounded-full hover:bg-black/10 dark:hover:bg-white/10 ${config.textClass} transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-${type} focus:ring-${type}`}
-              aria-label="Dismiss"
+              onClick={() => { setVisible(false); onClose(); }}
+              className="ml-2 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+              aria-label="Close alert"
             >
-              <HiX className="h-4 w-4" />
+              <HiX size={18} />
             </button>
           )}
-
-          {/* Progress indicator for timed alerts */}
+          {/* Progress bar for auto-dismiss */}
           {duration && (
             <motion.div
-              className={`absolute bottom-0 left-0 h-1 ${config.progressClass}`}
-              initial={{ width: "100%" }}
-              animate={{ width: `${remainingTime}%` }}
-              transition={{ duration: 0.1, ease: "linear" }}
+              className={`absolute left-0 bottom-0 h-1 rounded-b-xl ${config.progressClass}`}
+              initial={{ width: '100%' }}
+              animate={{ width: 0 }}
+              transition={{ duration: duration / 1000, ease: 'linear' }}
             />
           )}
         </motion.div>

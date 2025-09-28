@@ -49,6 +49,57 @@ const Loader: React.FC<LoaderProps> = ({
   // Determine color classes
   const colorClass = color || 'text-primary-light dark:text-primary-dark';
 
+  // Enhanced spinner with gradient and pulse
+  if (type === 'spinner') {
+    return (
+      <div className={containerClasses} role="status" aria-live="polite">
+        <motion.div
+          className={`relative flex items-center justify-center ${colorClass}`}
+          initial={{ scale: 0.7, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+        >
+          <motion.div
+            className="w-full h-full absolute animate-ping rounded-full bg-gradient-to-tr from-primary-light/30 to-accent-light/20 dark:from-primary-dark/30 dark:to-accent-dark/20"
+            style={{ width: sizeInPixels, height: sizeInPixels }}
+            aria-hidden="true"
+          />
+          <svg
+            className="animate-spin"
+            width={sizeInPixels}
+            height={sizeInPixels}
+            viewBox={`0 0 ${sizeInPixels} ${sizeInPixels}`}
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <circle
+              cx={sizeInPixels / 2}
+              cy={sizeInPixels / 2}
+              r={(sizeInPixels / 2) - 3}
+              stroke="currentColor"
+              strokeWidth="3"
+              className="opacity-30"
+            />
+            <path
+              d={`M${sizeInPixels / 2} 3
+                a ${(sizeInPixels / 2) - 3} ${(sizeInPixels / 2) - 3} 0 0 1 0 ${sizeInPixels - 6}`}
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              className="text-primary-light dark:text-primary-dark"
+            />
+          </svg>
+        </motion.div>
+        {label && (
+          <span className="mt-3 text-body-sm text-text_secondary-light dark:text-text_secondary-dark animate-fade-in">
+            {label}
+          </span>
+        )}
+      </div>
+    );
+  }
+
   // Render different loader types
   const renderLoader = () => {
     switch (type) {

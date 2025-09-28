@@ -80,6 +80,15 @@ const features = [
   }
 ];
 
+const sectionVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.15, type: 'spring', stiffness: 80, damping: 18 },
+  }),
+};
+
 const HomePage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [bestsellersPage, setBestsellersPage] = useState(0);
@@ -189,9 +198,15 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="bg-background-light dark:bg-background-dark text-text_primary-light dark:text-text_primary-dark">
-      {/* Hero Section with green theme gradient overlay and enhanced design */}
-      <section className="relative overflow-hidden">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark">
+      {/* Hero Section with animation */}
+      <motion.section
+        variants={sectionVariants}
+        initial="hidden"
+        animate="visible"
+        custom={0}
+        className="relative py-16 md:py-24 bg-gradient-to-br from-primary-light/10 to-accent-light/5 dark:from-primary-dark/10 dark:to-accent-dark/5 overflow-hidden"
+      >
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMxMEI5ODEiIGZpbGwtb3BhY2l0eT0iMC40Ij48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDRjMCAyLjIxIDEuNzkgNCA0IDRzNC0xLjc5IDQtNHptLTQgMTJjLTYuNjMgMC0xMi01LjM3LTEyLTEyczUuMzctMTIgMTItMTIgMTIgNS4zNyAxMiAxMi01LjM3IDEyLTEyIDEyeiI+PC9wYXRoPjwvZz48L2c+PC9zdmc+')] bg-center"></div>
@@ -322,7 +337,7 @@ const HomePage: React.FC = () => {
               className="fill-background-light dark:fill-background-dark"></path>
           </svg>
         </div>
-      </section>
+      </motion.section>
 
       <main>
         {/* Features highlight section */}
@@ -511,7 +526,13 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* Featured Authors Section */}
-        <section className="py-16 bg-gray-50/50 dark:bg-gray-900/20">
+        <motion.section
+          variants={sectionVariants}
+          initial="hidden"
+          animate="visible"
+          custom={1}
+          className="py-16 bg-gray-50/50 dark:bg-gray-900/20"
+        >
           <div className="container-padded">
             <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4 mb-12">
               <div>
@@ -574,10 +595,16 @@ const HomePage: React.FC = () => {
               ))}
             </div>
           </div>
-        </section>
+        </motion.section>
 
         {/* Latest Books Section */}
-        <section className="py-16">
+        <motion.section
+          variants={sectionVariants}
+          initial="hidden"
+          animate="visible"
+          custom={2}
+          className="py-16"
+        >
           <div className="container-padded">
             <motion.div
               className="flex flex-col md:flex-row justify-between items-center md:items-end gap-4 mb-12"
@@ -623,7 +650,7 @@ const HomePage: React.FC = () => {
               </>
             )}
           </div>
-        </section>
+        </motion.section>
 
         {/* Call to action */}
         <section className="py-16 bg-gradient-to-br from-primary-light/95 to-highlight-light/95 dark:from-primary-dark/95 dark:to-highlight-dark/95 text-white">

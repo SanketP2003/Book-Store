@@ -43,17 +43,24 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   // Determine base styles by variant
   const baseStyles = {
-    primary: 'bg-primary-light dark:bg-primary-dark text-white shadow-medium',
-    secondary: 'bg-secondary-light dark:bg-secondary-dark text-white shadow-medium',
+    primary: 'bg-gradient-to-r from-primary-light to-accent-light dark:from-primary-dark dark:to-accent-dark text-white shadow-lg',
+    secondary: 'bg-gradient-to-r from-secondary-light to-primary-light dark:from-secondary-dark dark:to-primary-dark text-white shadow-lg',
     outline: 'bg-transparent border border-border-light dark:border-border-dark text-text_primary-light dark:text-text_primary-dark',
     text: 'bg-transparent text-primary-light dark:text-primary-dark shadow-none hover:bg-primary-light/5 dark:hover:bg-primary-dark/10',
   };
 
   // Determine size styles
   const sizeStyles = {
-    sm: 'text-body-sm py-1 px-3 rounded-md',
-    md: 'text-button py-2 px-4 rounded-md',
-    lg: 'text-body-lg py-2.5 px-5 rounded-lg',
+    sm: 'px-3 py-1.5 text-sm rounded-md',
+    md: 'px-4 py-2 text-base rounded-lg',
+    lg: 'px-6 py-3 text-lg rounded-xl',
+  };
+
+  // Animation for tap/hover
+  const motionProps = {
+    whileHover: !isDisabled && !isLoading ? { scale: 1.04, boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)' } : {},
+    whileTap: !isDisabled && !isLoading ? { scale: 0.96 } : {},
+    transition: { type: 'spring', stiffness: 300, damping: 20 },
   };
 
   // Loading, hover, focus, and disabled states
@@ -175,6 +182,7 @@ const Button: React.FC<ButtonProps> = ({
       whileTap={!isDisabled && !isLoading ? { scale: 0.98 } : undefined}
       aria-label={ariaLabel || (typeof children === 'string' ? children : undefined)}
       aria-busy={isLoading}
+      {...motionProps}
     >
       {content}
     </motion.button>

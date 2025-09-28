@@ -63,38 +63,15 @@ const BookCard: React.FC<BookCardProps> = ({
   const randomRating = ((Math.random() * 2) + 3).toFixed(1); // Random rating between 3.0-5.0
   const ratingValue = parseFloat(randomRating);
 
-  // Animation variants
+  // Animation variants for entrance and hover
   const cardVariants = {
-    hidden: {
-      opacity: 0,
-      y: 30,
-      scale: 0.95,
-    },
-    visible: {
+    hidden: { opacity: 0, y: 40 },
+    visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        duration: 0.6,
-        delay: index * 0.08, // Staggered delay based on index
-        ease: [0.22, 1, 0.36, 1]
-      }
-    },
-  };
-
-  // Animation for the card on hover
-  const hoverAnimations = {
-    rest: {
-      scale: 1,
-      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-      transition: { type: "spring", stiffness: 400, damping: 17 }
-    },
-    hover: {
-      scale: 1.03,
-      boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-      transition: { type: "spring", stiffness: 400, damping: 12 }
-    }
+      transition: { delay: i * 0.08, type: 'spring', stiffness: 80, damping: 18 },
+    }),
+    hover: { scale: 1.04, boxShadow: '0 8px 32px 0 rgba(0,0,0,0.10)' },
   };
 
   // Handle add to cart with animation
@@ -120,22 +97,16 @@ const BookCard: React.FC<BookCardProps> = ({
     }
   };
 
-  // Combine animation variants to avoid duplicate attributes
-  const combinedVariants = {
-    hidden: cardVariants.hidden,
-    visible: cardVariants.visible,
-    rest: hoverAnimations.rest,
-    hover: hoverAnimations.hover
-  };
-
   return (
     <motion.div
       ref={ref}
+      custom={index}
+      variants={cardVariants}
       initial="hidden"
-      animate={inView ? "visible" : "hidden"}
+      animate={inView ? 'visible' : 'hidden'}
       whileHover="hover"
-      variants={combinedVariants}
-      className={`group h-full rounded-xl overflow-hidden bg-surface-light dark:bg-surface-dark shadow-medium hover:shadow-high transition-all duration-300 ${className}`}
+      className={`relative bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden transition-all duration-300 border border-border-light dark:border-border-dark hover:border-primary-light dark:hover:border-primary-dark ${className}`}
+      style={{ minHeight: 320 }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

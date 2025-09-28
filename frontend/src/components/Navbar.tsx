@@ -141,70 +141,45 @@ const Navbar: React.FC = () => {
     },
   };
 
+  // Add glassmorphism and shadow to navbar
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? "bg-surface-light/90 dark:bg-surface-dark/90 shadow-medium backdrop-blur-md" 
-          : "bg-surface-light dark:bg-surface-dark"
-      } border-b border-border-light dark:border-border-dark`}
+    <motion.nav
+      initial={{ y: -60, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 80, damping: 15 }}
+      className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${
+        isScrolled
+          ? 'backdrop-blur-lg bg-white/70 dark:bg-gray-900/70 shadow-xl'
+          : 'bg-transparent'
+      }`}
     >
-      {/* Skip to main content link for accessibility */}
-      <a
-        href="#main-content"
-        className="absolute top-0 left-0 -translate-y-full focus:translate-y-0 bg-primary-light text-white px-4 py-2 z-50"
-      >
-        Skip to main content
-      </a>
-
-      <div className="container mx-auto px-4 h-16 md:h-18 flex items-center justify-between">
-        {/* Logo and Desktop Nav */}
-        <div className="flex items-center gap-8">
-          <Link
-            to="/"
-            className="flex items-center gap-2 font-display font-bold text-xl text-text_primary-light dark:text-text_primary-dark group"
-            aria-label="BookStore Home"
-          >
-            <motion.span
-              className="relative flex items-center justify-center w-10 h-10"
-              whileHover={prefersReducedMotion ? {} : { rotate: [0, -5, 0, -5, 0] }}
-              transition={{ duration: 0.5 }}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+        {/* Logo and Brand */}
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-2xl font-bold text-primary-light dark:text-primary-dark drop-shadow-lg hover:scale-105 transition-transform duration-200"
+        >
+          <HiOutlineBookOpen className="w-8 h-8" />
+          BookStore
+        </Link>
+        {/* Desktop Nav Links */}
+        <div className="hidden md:flex items-center gap-6">
+          {navLinks.map(({ to, text, icon: Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `flex items-center gap-1 px-3 py-2 rounded-lg font-medium transition-all duration-200 hover:bg-primary-light/10 dark:hover:bg-primary-dark/10 hover:scale-105 ${
+                  isActive
+                    ? 'bg-primary-light/20 dark:bg-primary-dark/20 text-primary-light dark:text-primary-dark shadow-md'
+                    : 'text-gray-700 dark:text-gray-200'
+                }`
+              }
             >
-              <span className="absolute w-8 h-8 bg-gradient-to-br from-green-500 to-green-300 dark:from-green-400 dark:to-green-200 rounded-lg -rotate-6 group-hover:rotate-0 transition-transform duration-300"></span>
-              <HiOutlineBookOpen className="h-6 w-6 text-white z-10" />
-            </motion.span>
-            <span className="bg-gradient-to-r from-primary-light to-green-600 dark:from-primary-dark dark:to-green-400 bg-clip-text text-transparent">
-              BookStore
-            </span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-6 text-body-md font-medium text-text_secondary-light dark:text-text_secondary-dark">
-            {navLinks.map(link => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={({ isActive }) =>
-                  `relative px-2 py-1 rounded-md transition-colors duration-200
-                  ${isActive 
-                    ? "text-primary-light dark:text-primary-dark font-semibold" 
-                    : "hover:text-primary-light dark:hover:text-primary-dark"}`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <span className="relative z-10">{link.text}</span>
-                    {isActive && (
-                      <motion.span
-                        className="absolute inset-0 bg-primary-light/10 dark:bg-primary-dark/10 rounded-md"
-                        layoutId="navbar-active"
-                        transition={{ type: "spring", duration: 0.5, bounce: 0.2 }}
-                      />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </nav>
+              <Icon className="w-5 h-5" />
+              {text}
+            </NavLink>
+          ))}
         </div>
 
         {/* Right-side actions */}
@@ -497,7 +472,7 @@ const Navbar: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </motion.nav>
   );
 };
 
