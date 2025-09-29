@@ -8,7 +8,7 @@ export default function AboutPage() {
       <section className="py-12 mb-12">
         <div className="text-center">
           <motion.h1
-            className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4"
+            className="page-title mb-4"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -16,7 +16,7 @@ export default function AboutPage() {
             About Bookstore
           </motion.h1>
           <motion.p
-            className="text-lg text-gray-600 max-w-3xl mx-auto"
+            className="section-subtitle max-w-3xl mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -36,8 +36,8 @@ export default function AboutPage() {
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-2xl md:text-3xl font-bold mb-6">Our Story</h2>
-            <div className="space-y-4 text-gray-700">
+            <h2 className="section-title mb-6">Our Story</h2>
+            <div className="space-y-4" style={{ color: 'var(--text-secondary)' }}>
               <p>
                 Founded in 2010, Bookstore began as a small corner shop with a simple mission: to connect readers with books they'll love. What started as a passion project quickly grew into a beloved community institution.
               </p>
@@ -56,13 +56,16 @@ export default function AboutPage() {
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
           >
-            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-r from-primary-100 to-blue-100 rounded-lg transform rotate-2"></div>
+            <div
+              className="absolute top-0 right-0 w-full h-full rounded-lg"
+              style={{ background: 'color-mix(in oklab, var(--accent-primary) 12%, var(--bg-secondary))' }}
+            ></div>
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="grid grid-cols-2 gap-3">
-                <div className="aspect-[3/4] bg-white rounded shadow-md transform -rotate-3"></div>
-                <div className="aspect-[3/4] bg-white rounded shadow-md transform rotate-3"></div>
-                <div className="aspect-[3/4] bg-white rounded shadow-md transform rotate-6"></div>
-                <div className="aspect-[3/4] bg-white rounded shadow-md transform -rotate-6"></div>
+                <div className="aspect-[3/4] rounded shadow-md transform -rotate-3" style={{ backgroundColor: 'var(--card-bg)' }}></div>
+                <div className="aspect-[3/4] rounded shadow-md transform rotate-3" style={{ backgroundColor: 'var(--card-bg)' }}></div>
+                <div className="aspect-[3/4] rounded shadow-md transform rotate-6" style={{ backgroundColor: 'var(--card-bg)' }}></div>
+                <div className="aspect-[3/4] rounded shadow-md transform -rotate-6" style={{ backgroundColor: 'var(--card-bg)' }}></div>
               </div>
             </div>
           </motion.div>
@@ -70,21 +73,21 @@ export default function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="mb-16 py-10 bg-gray-50 rounded-lg px-6">
-        <h2 className="text-2xl md:text-3xl font-bold mb-10 text-center">Our Values</h2>
+      <section className="mb-16 py-10 rounded-lg px-6" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+        <h2 className="section-title mb-10 text-center">Our Values</h2>
         <div className="grid md:grid-cols-3 gap-8">
           <motion.div
-            className="bg-white p-6 rounded-lg shadow-sm"
+            className="card p-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             viewport={{ once: true }}
           >
-            <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
-              <BookOpen className="text-primary-600" size={24} />
+            <div className="w-12 h-12 bg-accent-8 rounded-full flex items-center justify-center mb-4">
+              <BookOpen className="text-accent" size={24} />
             </div>
             <h3 className="font-semibold text-xl mb-2">Knowledge for All</h3>
-            <p className="text-gray-600">
+            <p style={{ color: 'var(--text-secondary)' }}>
               We believe that books and knowledge should be accessible to everyone.
               Our pricing and selection reflect our commitment to making reading
               available to readers of all backgrounds.
@@ -92,34 +95,34 @@ export default function AboutPage() {
           </motion.div>
 
           <motion.div
-            className="bg-white p-6 rounded-lg shadow-sm"
+            className="card p-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             viewport={{ once: true }}
           >
-            <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
-              <Award className="text-primary-600" size={24} />
+            <div className="w-12 h-12 bg-accent-8 rounded-full flex items-center justify-center mb-4">
+              <Award className="text-accent" size={24} />
             </div>
             <h3 className="font-semibold text-xl mb-2">Quality Selection</h3>
-            <p className="text-gray-600">
+            <p style={{ color: 'var(--text-secondary)' }}>
               We carefully curate our inventory to include books that inspire, educate,
               and entertain. Every title is selected with our customers in mind.
             </p>
           </motion.div>
 
           <motion.div
-            className="bg-white p-6 rounded-lg shadow-sm"
+            className="card p-6"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
             viewport={{ once: true }}
           >
-            <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mb-4">
-              <Users className="text-primary-600" size={24} />
+            <div className="w-12 h-12 bg-accent-8 rounded-full flex items-center justify-center mb-4">
+              <Users className="text-accent" size={24} />
             </div>
             <h3 className="font-semibold text-xl mb-2">Community Focus</h3>
-            <p className="text-gray-600">
+            <p style={{ color: 'var(--text-secondary)' }}>
               Beyond selling books, we aim to foster a community of readers who share
               ideas, recommend titles, and grow together through the power of reading.
             </p>
@@ -129,7 +132,7 @@ export default function AboutPage() {
 
       {/* Team Section */}
       <section className="mb-16">
-        <h2 className="text-2xl md:text-3xl font-bold mb-10 text-center">Meet Our Team</h2>
+        <h2 className="section-title mb-10 text-center">Meet Our Team</h2>
         <div className="grid md:grid-cols-4 gap-6">
           {[
             { name: 'Sarah Johnson', role: 'Founder & CEO', image: 'https://i.pravatar.cc/300?img=1' },
@@ -149,15 +152,15 @@ export default function AboutPage() {
                 <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
               </div>
               <h3 className="font-semibold text-lg">{member.name}</h3>
-              <p className="text-gray-500">{member.role}</p>
+              <p style={{ color: 'var(--text-muted)' }}>{member.role}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="mb-16 py-10 bg-gray-50 rounded-lg px-6">
-        <h2 className="text-2xl md:text-3xl font-bold mb-10 text-center">Our Impact</h2>
+      <section className="mb-16 py-10 rounded-lg px-6" style={{ backgroundColor: 'var(--bg-secondary)' }}>
+        <h2 className="section-title mb-10 text-center">Our Impact</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
           {[
             { icon: <BookOpen size={32} />, value: '50,000+', label: 'Books in Collection' },
@@ -173,21 +176,27 @@ export default function AboutPage() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
             >
-              <div className="flex justify-center text-primary-600 mb-2">{stat.icon}</div>
+              <div className="flex justify-center text-accent mb-2">{stat.icon}</div>
               <h3 className="text-3xl font-bold mb-1">{stat.value}</h3>
-              <p className="text-gray-500">{stat.label}</p>
+              <p style={{ color: 'var(--text-muted)' }}>{stat.label}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="mb-16 bg-gradient-to-r from-primary-600 to-blue-700 text-white rounded-lg p-8 text-center">
+      <section
+        className="mb-16 rounded-lg p-8 text-center"
+        style={{
+          color: '#fff',
+          backgroundImage: 'linear-gradient(90deg, var(--accent-primary), color-mix(in oklab, var(--accent-primary) 65%, #000))'
+        }}
+      >
         <h2 className="text-2xl md:text-3xl font-bold mb-4">Ready to start reading?</h2>
         <p className="mb-6 max-w-2xl mx-auto">
           Visit our collection and find your next great read today!
         </p>
-        <a href="/books" className="btn bg-white text-primary-700 hover:bg-gray-100 inline-block">
+        <a href="/books" className="btn btn-secondary inline-block">
           Explore Our Books
         </a>
       </section>

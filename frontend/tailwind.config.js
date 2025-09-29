@@ -4,77 +4,64 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class', // Enable class-based dark mode
+  darkMode: 'class', // class-based dark mode
   theme: {
     extend: {
       colors: {
-        // Updated color palette based on UI specification
+        // Map app colors to CSS variables to avoid hardcoded colors
         primary: {
-          light: '#10B981', // Emerald Green
-          dark: '#34D399',  // Emerald Green (Dark Mode)
+          light: 'var(--accent-primary)',
+          dark: 'var(--accent-primary)',
         },
         'primary-light': {
-          DEFAULT: '#D1FAE5', // Soft Green
+          DEFAULT: 'var(--accent-primary)',
         },
         'primary-dark': {
-          DEFAULT: '#065F46', // Deep Green
+          DEFAULT: 'var(--accent-primary)',
         },
         secondary: {
-          light: '#1E40AF', // Deep Navy
-          dark: '#60A5FA',  // Light Blue
+          light: 'var(--bg-secondary)',
+          dark: 'var(--bg-secondary)',
         },
         accent: {
-          light: '#F59E0B', // Amber
-          dark: '#FBBF24',  // Amber Light
+          light: 'var(--accent-primary)',
+          dark: 'var(--accent-primary)',
         },
         background: {
-          light: '#FFFFFF', // White
-          dark: '#121826',  // Dark Slate
+          light: 'var(--bg-primary)',
+          dark: 'var(--bg-primary)',
         },
         surface: {
-          light: '#F9FAFB', // Soft White
-          dark: '#1E293B',  // Dark Blue-Gray
+          light: 'var(--card-bg)',
+          dark: 'var(--card-bg)',
         },
         text_primary: {
-          light: '#1F2937', // Dark Slate
-          dark: '#F9FAFB',  // White
+          light: 'var(--text-primary)',
+          dark: 'var(--text-primary)',
         },
         text_secondary: {
-          light: '#6B7280', // Gray
-          dark: '#9CA3AF',  // Light Gray
+          light: 'var(--text-secondary)',
+          dark: 'var(--text-secondary)',
         },
         border: {
-          light: '#E5E7EB', // Light Gray
-          dark: '#374151',  // Dark Gray
+          light: 'var(--card-border)',
+          dark: 'var(--card-border)',
         },
         error: {
-          light: '#EF4444', // Red
-          dark: '#F87171',  // Light Red
+          light: 'var(--error)',
+          dark: 'var(--error)',
         },
         success: {
-          light: '#22C55E', // Green
-          dark: '#4ADE80',  // Light Green
+          light: 'var(--success)',
+          dark: 'var(--success)',
         },
         warning: {
-          light: '#F97316', // Orange
-          dark: '#FB923C',  // Light Orange
+          light: 'var(--warning)',
+          dark: 'var(--warning)',
         },
         info: {
-          light: '#3B82F6', // Blue
-          dark: '#60A5FA',  // Light Blue
-        },
-        // Extended green palette
-        green: {
-          50: '#ECFDF5',
-          100: '#D1FAE5',
-          200: '#A7F3D0',
-          300: '#6EE7B7',
-          400: '#34D399',
-          500: '#10B981',
-          600: '#059669',
-          700: '#047857',
-          800: '#065F46',
-          900: '#064E3B',
+          light: 'var(--accent-primary)',
+          dark: 'var(--accent-primary)',
         },
       },
       fontFamily: {
@@ -83,37 +70,32 @@ export default {
         mono: ['JetBrains Mono', 'monospace'],
       },
       fontSize: {
-        // Updated font size scale based on UI specification
-        'display-lg': ['3rem', { lineHeight: '1.1', fontWeight: '700' }],      // 48px
-        'display-md': ['2.25rem', { lineHeight: '1.2', fontWeight: '700' }],   // 36px
-        'display-sm': ['1.875rem', { lineHeight: '1.2', fontWeight: '700' }],  // 30px
-        'h1': ['1.5rem', { lineHeight: '1.3', fontWeight: '700' }],            // 24px
-        'h2': ['1.25rem', { lineHeight: '1.3', fontWeight: '600' }],           // 20px
-        'h3': ['1.125rem', { lineHeight: '1.4', fontWeight: '600' }],          // 18px
-        'body-lg': ['1rem', { lineHeight: '1.6', fontWeight: '400' }],         // 16px
-        'body-md': ['0.875rem', { lineHeight: '1.6', fontWeight: '400' }],     // 14px
-        'body-sm': ['0.75rem', { lineHeight: '1.5', fontWeight: '400' }],      // 12px
-        'label': ['0.875rem', { lineHeight: '1.4', fontWeight: '500' }],       // 14px
-        'button': ['0.875rem', { lineHeight: '1.4', fontWeight: '600' }],      // 14px
+        'display-lg': ['3rem', { lineHeight: '1.1', fontWeight: '700' }],
+        'display-md': ['2.25rem', { lineHeight: '1.2', fontWeight: '700' }],
+        'display-sm': ['1.875rem', { lineHeight: '1.2', fontWeight: '700' }],
+        'h1': ['1.5rem', { lineHeight: '1.3', fontWeight: '700' }],
+        'h2': ['1.25rem', { lineHeight: '1.3', fontWeight: '600' }],
+        'h3': ['1.125rem', { lineHeight: '1.4', fontWeight: '600' }],
+        'body-lg': ['1rem', { lineHeight: '1.6', fontWeight: '400' }],
+        'body-md': ['0.875rem', { lineHeight: '1.6', fontWeight: '400' }],
+        'body-sm': ['0.75rem', { lineHeight: '1.5', fontWeight: '400' }],
+        'label': ['0.875rem', { lineHeight: '1.4', fontWeight: '500' }],
+        'button': ['0.875rem', { lineHeight: '1.4', fontWeight: '600' }],
       },
       boxShadow: {
-        // Updated shadow system based on UI specification
         'low': '0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06)',
         'medium': '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
         'high': '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)',
-        'focus': '0 0 0 3px rgba(16,185,129,0.4)',
+        'focus': '0 0 0 3px rgba(124,58,237,0.45)', // match purple focus by default
         'inner': 'inset 0 2px 4px rgba(0,0,0,0.06)',
-        'glow': '0 0 15px rgba(16, 185, 129, 0.6)', // Green glow
-        'glow-dark': '0 0 15px rgba(52, 211, 153, 0.6)', // Green glow for dark mode
-
-        // Add missing soft shadow variants
+        'glow': '0 0 15px rgba(124, 58, 237, 0.5)',
+        'glow-dark': '0 0 15px rgba(139, 92, 246, 0.5)',
         'soft': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
         'soft-md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         'soft-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         'soft-xl': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
       },
       borderRadius: {
-        // Updated border radius system based on UI specification
         'xs': '2px',
         'sm': '4px',
         'md': '8px',
@@ -122,15 +104,14 @@ export default {
         'full': '9999px',
       },
       spacing: {
-        // Updated spacing system based on UI specification
-        'xs': '0.25rem', // 4px
-        'sm': '0.5rem',  // 8px
-        'md': '1rem',    // 16px
-        'lg': '1.5rem',  // 24px
-        'xl': '2rem',    // 32px
-        '2xl': '3rem',   // 48px
-        '3xl': '4rem',   // 64px
-        '4xl': '5rem',   // 80px
+        'xs': '0.25rem',
+        'sm': '0.5rem',
+        'md': '1rem',
+        'lg': '1.5rem',
+        'xl': '2rem',
+        '2xl': '3rem',
+        '3xl': '4rem',
+        '4xl': '5rem',
         '18': '4.5rem',
       },
       backdropBlur: {

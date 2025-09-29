@@ -5,6 +5,69 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Centralized Theme Variables */
+:root {
+  /* Text */
+  --text-primary: #1F2937;
+  --text-secondary: #4B5563;
+  --text-muted: #6B7280;
+
+  /* Backgrounds */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F3F4F6; /* slightly more contrast than #F9FAFB */
+
+  /* Cards/Surfaces */
+  --card-bg: #FFFFFF;
+  --card-border: #E5E7EB;
+
+  /* Controls (inputs/buttons) */
+  --control-bg: #FFFFFF;
+  --control-border: #D1D5DB;
+  --control-placeholder: var(--text-muted);
+
+  /* Accent: Cosmic Indigo */
+  --accent-primary: #7C3AED;    /* violet-600 */
+  --accent-hover: #6D28D9;      /* violet-700 */
+  --focus-ring: rgba(124, 58, 237, 0.5);
+
+  /* State colors */
+  --success: #16A34A;           /* green-600 for stronger contrast */
+  --warning: #D97706;           /* amber-600 */
+  --error: #DC2626;             /* red-600 */
+
+  /* Shadows */
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --shadow-elevated: rgba(0, 0, 0, 0.12);
+}
+
+.dark {
+  --text-primary: #E5E7EB;     /* gray-200 */
+  --text-secondary: #D1D5DB;   /* gray-300 */
+  --text-muted: #9CA3AF;       /* gray-400 */
+
+  --bg-primary: #0A0A12;       /* deep cosmic base */
+  --bg-secondary: #111223;     /* slightly lighter */
+
+  --card-bg: #181928;          /* indigo-tinted dark */
+  --card-border: #2C2E40;      /* desaturated border */
+
+  --control-bg: #0F1020;
+  --control-border: #2C2E40;
+  --control-placeholder: var(--text-muted);
+
+  /* Accent stays Cosmic Indigo */
+  --accent-primary: #8B5CF6;    /* violet-500/600 blend */
+  --accent-hover: #7C3AED;      /* violet-600 */
+  --focus-ring: rgba(139, 92, 246, 0.5);
+
+  --success: #22C55E;  /* green-500 */
+  --warning: #F59E0B;  /* amber-500 */
+  --error: #F87171;    /* red-400/500 blend for dark */
+
+  --shadow-color: rgba(0, 0, 0, 0.6);
+  --shadow-elevated: rgba(0, 0, 0, 0.7);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -12,51 +75,70 @@
   }
 
   body {
-    @apply font-sans text-text_primary-light dark:text-text_primary-dark bg-background-light dark:bg-background-dark;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    @apply font-sans transition-colors duration-300;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   /* Focus styles for accessibility */
   *:focus-visible {
-    @apply outline-none ring-2 ring-primary-light dark:ring-primary-dark ring-offset-2 ring-offset-white dark:ring-offset-background-dark;
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
   }
 }
 
 @layer components {
   /* Card Components */
   .card {
-    @apply bg-surface-light dark:bg-surface-dark rounded-xl overflow-hidden shadow-soft-md transition-all duration-300;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: 0 2px 8px var(--shadow-color);
+    @apply rounded-xl overflow-hidden transition-all duration-300;
   }
 
   .card-hover {
-    @apply hover:shadow-soft-lg hover:-translate-y-1;
+    box-shadow: 0 6px 16px var(--shadow-elevated);
+    @apply hover:-translate-y-1;
   }
 
   /* Button Components - Redesigned with green theme */
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center px-4 py-2 font-medium rounded-lg transition-all duration-200;
+    border: 1px solid transparent;
   }
 
   .btn-primary {
-    @apply bg-primary-light dark:bg-primary-dark text-white hover:bg-primary-light/90 dark:hover:bg-primary-dark/90 focus:ring-primary-light/50 dark:focus:ring-primary-dark/50;
+    background-color: var(--accent-primary);
+    color: #fff;
+    box-shadow: 0 2px 6px var(--shadow-color);
   }
+  .btn-primary:hover { background-color: var(--accent-hover); }
+  .btn-primary:focus-visible { box-shadow: 0 0 0 3px var(--focus-ring); }
 
   .btn-secondary {
-    @apply bg-secondary-light dark:bg-secondary-dark text-white hover:bg-secondary-light/90 dark:hover:bg-secondary-dark/90 focus:ring-secondary-light/50 dark:focus:ring-secondary-dark/50;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--card-border);
   }
+  .btn-secondary:hover { filter: brightness(0.98); }
 
   .btn-outline {
-    @apply border border-gray-300 dark:border-gray-600 bg-transparent hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-primary-light dark:hover:border-primary-dark text-text_primary-light dark:text-text_primary-dark;
+    background-color: transparent;
+    color: var(--text-primary);
+    border-color: var(--card-border);
   }
+  .btn-outline:hover { background-color: color-mix(in oklab, var(--accent-primary) 8%, transparent); }
 
-  .btn-sm {
-    @apply px-3 py-1.5 text-sm rounded-md;
+  .btn-text {
+    background-color: transparent;
+    color: var(--accent-primary);
   }
+  .btn-text:hover { background-color: color-mix(in oklab, var(--accent-primary) 10%, transparent); }
 
-  .btn-lg {
-    @apply px-6 py-3 text-lg rounded-lg;
-  }
+  .btn-sm { @apply px-3 py-1.5 text-sm rounded-md; }
+  .btn-lg { @apply px-6 py-3 text-lg rounded-lg; }
 
   /* Badge Components - Enhanced with green theme */
   .badge {
@@ -76,105 +158,154 @@
   }
 
   /* Form Components - Redesigned */
-  .form-input {
-    @apply w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg
-           focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark
-           focus:border-primary-light dark:focus:border-primary-dark placeholder:text-gray-400
-           dark:placeholder:text-gray-500 text-text_primary-light dark:text-text_primary-dark;
-  }
-
-  /* Styled form input with icon */
-  .input-with-icon {
-    @apply relative;
-  }
-
-  .input-with-icon input {
-    @apply pl-10;
-  }
-
-  .input-with-icon .icon {
-    @apply absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none;
-  }
-
   .form-label {
-    @apply block mb-1.5 text-sm font-medium text-text_primary-light dark:text-text_primary-dark;
+    color: var(--text-secondary);
+    @apply block mb-1.5 text-sm font-medium;
+  }
+
+  .form-input, .input-field {
+    width: 100%;
+    padding: 0.625rem 1rem; /* 10px 16px */
+    background-color: var(--control-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--control-border);
+    border-radius: 0.75rem; /* rounded-xl */
+    transition: box-shadow 200ms, border-color 200ms, background-color 200ms;
+    box-shadow: 0 1px 2px var(--shadow-color) inset;
+  }
+  .form-input::placeholder, .input-field::placeholder {
+    color: var(--control-placeholder);
+  }
+  .form-input:focus, .input-field:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--focus-ring);
   }
 
   .form-select {
-    @apply w-full px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600
-           rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark
-           focus:border-primary-light dark:focus:border-primary-dark text-text_primary-light dark:text-text_primary-dark;
+    width: 100%;
+    padding: 0.625rem 1rem;
+    background-color: var(--control-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--control-border);
+    border-radius: 0.75rem;
+    transition: box-shadow 200ms, border-color 200ms, background-color 200ms;
   }
+  .form-select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+  }
+
+  /* Styled form input with icon */
+  .input-with-icon { @apply relative; }
+  .input-with-icon input { padding-left: 2.5rem; }
+  .input-with-icon .icon { @apply absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none; color: var(--text-muted); }
 
   /* Search bar styling */
-  .search-bar {
-    @apply relative flex items-center;
-  }
-
+  .search-bar { @apply relative flex items-center; }
   .search-bar input {
-    @apply pl-10 pr-4 py-2.5 w-full rounded-full border border-gray-300 dark:border-gray-600
-           bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-light dark:focus:ring-primary-dark
-           focus:border-primary-light dark:focus:border-primary-dark transition-all duration-300;
+    padding: 0.625rem 1rem;
+    padding-left: 2.5rem;
+    width: 100%;
+    border-radius: 9999px;
+    border: 1px solid var(--control-border);
+    background-color: var(--control-bg);
+    transition: box-shadow 200ms, border-color 200ms, background-color 200ms;
   }
+  .search-bar input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--focus-ring); }
+  .search-bar .icon { @apply absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none; color: var(--text-muted); }
 
-  .search-bar .icon {
-    @apply absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 pointer-events-none;
-  }
+  /* Page skeletons */
+  .container-padded { @apply container mx-auto px-4 sm:px-6 lg:px-8; }
+  .section { @apply py-12 md:py-16 lg:py-20; }
 
-  /* Container with responsive padding */
-  .container-padded {
-    @apply container mx-auto px-4 sm:px-6 lg:px-8;
-  }
+  /* Titles */
+  .page-title { @apply text-3xl md:text-4xl font-display font-bold mb-6 relative; color: var(--text-primary); }
+  .page-title::after { content: ''; position: absolute; left: 0; bottom: 0; height: 4px; width: 4rem; background-color: var(--accent-primary); border-radius: 9999px; }
+  .section-title { @apply text-2xl md:text-3xl font-display font-bold mb-2; color: var(--text-primary); }
+  .section-subtitle { color: var(--text-muted); @apply mb-8; }
 
-  /* Section spacing */
-  .section {
-    @apply py-12 md:py-16 lg:py-20;
+  /* Theme toggle button */
+  .theme-toggle {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border: 1px solid var(--card-border);
+    @apply p-2 rounded-full transition-colors duration-300;
   }
+  .theme-toggle:hover { background-color: color-mix(in oklab, var(--accent-primary) 10%, var(--card-bg)); }
 
-  /* Page title with green accent */
-  .page-title {
-    @apply text-3xl md:text-4xl font-display font-bold text-text_primary-light dark:text-text_primary-dark mb-6 relative;
+  /* Navbar helpers */
+  .nav-bar {
+    backdrop-filter: blur(12px);
+    background-color: color-mix(in oklab, var(--bg-primary) 70%, transparent);
+    @apply shadow-lg;
   }
+  .nav-link {
+    color: var(--text-secondary);
+    @apply flex items-center gap-1 px-3 py-2 rounded-lg font-medium transition-all duration-200;
+  }
+  .nav-link:hover { background-color: color-mix(in oklab, var(--accent-primary) 8%, transparent); color: var(--text-primary); }
+  .nav-link-active {
+    color: var(--accent-primary);
+    background-color: color-mix(in oklab, var(--accent-primary) 12%, transparent);
+    @apply shadow-sm;
+  }
+  .nav-icon-btn {
+    color: var(--text-secondary);
+    @apply p-2 rounded-full transition-colors;
+  }
+  .nav-icon-btn:hover { color: var(--accent-primary); background-color: color-mix(in oklab, var(--accent-primary) 8%, transparent); }
+  .nav-search-input {
+    width: 100%;
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    border-radius: 9999px;
+    border: 1px solid var(--control-border);
+    background-color: var(--control-bg);
+    color: var(--text-primary);
+  }
+  .nav-search-input:focus { outline: none; border-color: var(--accent-primary); box-shadow: 0 0 0 3px var(--focus-ring); }
 
-  .page-title::after {
-    @apply content-[''] absolute left-0 bottom-0 h-1 w-16 bg-green-500 dark:bg-green-400 rounded-full;
+  /* Footer helpers */
+  .footer-bar {
+    background-color: color-mix(in oklab, var(--bg-primary) 80%, transparent);
+    border-top: 1px solid var(--card-border);
+    color: var(--text-secondary);
+    @apply backdrop-blur-lg shadow-lg;
   }
-
-  /* Section title with accent */
-  .section-title {
-    @apply text-2xl md:text-3xl font-display font-bold mb-2;
-  }
-
-  .section-subtitle {
-    @apply text-text_secondary-light dark:text-text_secondary-dark mb-8;
-  }
-
-  /* Grid layouts */
-  .grid-cards {
-    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
-  }
+  .footer-section-title { color: var(--text-primary); }
+  .footer-link { color: var(--text-secondary); }
+  .footer-link:hover { color: var(--accent-primary); }
+  .footer-divider { border-color: var(--card-border); }
 }
 
-/* Subtle animations for interactions */
 @layer utilities {
-  .animate-hover-up {
-    @apply transition-transform duration-200 hover:-translate-y-1;
-  }
+  /* Subtle animations for interactions */
+  .animate-hover-up { @apply transition-transform duration-200 hover:-translate-y-1; }
 
-  .text-gradient {
-    @apply bg-gradient-to-r from-green-600 to-green-400 dark:from-green-500 dark:to-green-300 bg-clip-text text-transparent;
-  }
+  .text-gradient { @apply bg-clip-text text-transparent; background-image: linear-gradient(90deg, color-mix(in oklab, var(--accent-primary) 85%, #000), color-mix(in oklab, var(--accent-primary) 65%, #fff)); }
 
-  .bg-gradient-green {
-    @apply bg-gradient-to-r from-green-600 to-green-400 dark:from-green-500 dark:to-green-300;
-  }
+  .bg-gradient-green { background-image: linear-gradient(90deg, color-mix(in oklab, var(--accent-primary) 85%, #000), color-mix(in oklab, var(--accent-primary) 65%, #fff)); }
 
-  .shadow-hover {
-    @apply transition-shadow duration-200 hover:shadow-soft-lg;
-  }
+  .shadow-hover { @apply transition-shadow duration-200; box-shadow: 0 8px 20px var(--shadow-color); }
 
-  /* Green horizontal underline animation */
   .hover-underline {
-    @apply relative after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-primary-light dark:after:bg-primary-dark after:transition-all after:duration-300 hover:after:w-full;
+    @apply relative;
   }
+  .hover-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 2px;
+    width: 0;
+    background-color: var(--accent-primary);
+    transition: width 300ms ease;
+  }
+  .hover-underline:hover::after { width: 100%; }
+
+  .text-accent { color: var(--accent-primary); }
+  .bg-accent-8 { background-color: color-mix(in oklab, var(--accent-primary) 8%, transparent); }
+  .bg-accent-12 { background-color: color-mix(in oklab, var(--accent-primary) 12%, transparent); }
+  .border-card { border-color: var(--card-border); }
 }

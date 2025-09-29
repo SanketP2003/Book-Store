@@ -374,7 +374,7 @@ const CartPage: React.FC = () => {
                   variant="primary"
                   size="lg"
                   className="w-full mt-2"
-                  isLoading={placeOrderMutation.isLoading}
+                  isLoading={placeOrderMutation.isPending}
                   icon={<HiOutlineCheckCircle size={20} />}
                 >
                   Place Order
