@@ -64,7 +64,8 @@ const Button: React.FC<ButtonProps> = ({
     <>
       {isLoading && (
         <motion.div
-          className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+          className="w-4 h-4 border-2 rounded-full"
+          style={{ borderColor: 'var(--on-accent)', borderTopColor: 'transparent' }}
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           aria-hidden="true"

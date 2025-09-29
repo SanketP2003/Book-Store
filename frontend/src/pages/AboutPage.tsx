@@ -188,7 +188,7 @@ export default function AboutPage() {
       <section
         className="mb-16 rounded-lg p-8 text-center"
         style={{
-          color: '#fff',
+          color: 'var(--on-accent)',
           backgroundImage: 'linear-gradient(90deg, var(--accent-primary), color-mix(in oklab, var(--accent-primary) 65%, #000))'
         }}
       >

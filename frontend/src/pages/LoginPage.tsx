@@ -7,6 +7,7 @@ import type { LoginRequest } from '@/types/api';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { HiOutlineMail, HiOutlineLockClosed, HiOutlineLogin, HiOutlineArrowSmRight, HiOutlineBookOpen } from 'react-icons/hi';
+import Button from '../components/Button';
 
 const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'https://book-store-backend-8880.onrender.com';
 

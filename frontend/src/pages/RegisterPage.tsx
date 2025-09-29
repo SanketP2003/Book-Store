@@ -14,6 +14,7 @@ import {
   HiOutlineUserAdd,
   HiOutlineArrowSmLeft
 } from 'react-icons/hi';
+import Button from '../components/Button';
 
 const RegisterPage: React.FC = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<UserRegistrationRequest>();

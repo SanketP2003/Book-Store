@@ -29,6 +29,7 @@
   --accent-primary: #7C3AED;    /* violet-600 */
   --accent-hover: #6D28D9;      /* violet-700 */
   --focus-ring: rgba(124, 58, 237, 0.5);
+  --on-accent: #ffffff;         /* text/icon on accent backgrounds */
 
   /* State colors */
   --success: #16A34A;           /* green-600 for stronger contrast */
@@ -59,6 +60,7 @@
   --accent-primary: #8B5CF6;    /* violet-500/600 blend */
   --accent-hover: #7C3AED;      /* violet-600 */
   --focus-ring: rgba(139, 92, 246, 0.5);
+  --on-accent: #ffffff;
 
   --success: #22C55E;  /* green-500 */
   --warning: #F59E0B;  /* amber-500 */
@@ -111,7 +113,7 @@
 
   .btn-primary {
     background-color: var(--accent-primary);
-    color: #fff;
+    color: var(--on-accent);
     box-shadow: 0 2px 6px var(--shadow-color);
   }
   .btn-primary:hover { background-color: var(--accent-hover); }
