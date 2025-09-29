@@ -7,6 +7,7 @@ import { formatCurrency, imageUrl } from '@/utils/format';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import Button from '../components/Button';
 import {
   HiOutlineTrash,
   HiArrowRight,
@@ -228,7 +229,7 @@ const CartPage: React.FC = () => {
 
   // Main cart view with items
   return (
-    <div className="page-container py-8">
+    <div className="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -297,7 +298,7 @@ const CartPage: React.FC = () => {
                         min={1}
                         value={item.quantity}
                         onChange={e => handleUpdateQuantity(item.id, Number(e.target.value))}
-                        className="input-field w-14 h-10 text-center rounded-none border-y border-x-0 border-gray-200 dark:border-gray-700"
+                        className="form-input w-16 h-10 text-center rounded-none border-y border-x-0 border-gray-200 dark:border-gray-700 focus:ring-0 focus:border-gray-300 dark:focus:border-gray-600"
                       />
 
                       <motion.button
@@ -330,90 +331,54 @@ const CartPage: React.FC = () => {
           {/* Checkout Form */}
           {showCheckout && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="card p-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="mt-10 bg-surface-light dark:bg-surface-dark p-8 rounded-xl shadow-soft-lg max-w-lg mx-auto"
             >
-              <h2 className="text-xl font-display font-bold mb-4">Shipping Information</h2>
+              <h2 className="text-2xl font-bold mb-6 text-center">Checkout</h2>
+              {placeOrderMutation.isError && (
+                <Alert type="error" message="Failed to place order. Please try again." className="mb-4" />
+              )}
+              {checkoutSuccess && (
+                <Alert type="success" message="Order placed successfully! Redirecting..." className="mb-4" />
+              )}
               <form onSubmit={handleCheckout} className="space-y-4">
                 <div>
-                  <label htmlFor="shippingAddress" className="block text-sm font-medium text-text_secondary-light dark:text-text_secondary-dark mb-1">
-                    Shipping Address *
-                  </label>
-                  <textarea
+                  <label htmlFor="shippingAddress" className="form-label">Shipping Address</label>
+                  <input
                     id="shippingAddress"
+                    type="text"
+                    className="form-input"
+                    placeholder="Enter your shipping address"
                     value={shippingAddress}
-                    onChange={(e) => setShippingAddress(e.target.value)}
-                    className="input-field"
-                    rows={3}
-                    placeholder="Enter your full shipping address"
+                    onChange={e => setShippingAddress(e.target.value)}
                     required
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium text-text_secondary-light dark:text-text_secondary-dark mb-1">
-                    Payment Method *
-                  </label>
-                  <div className="space-y-2">
-                    <label className="flex items-center p-3 border rounded-lg cursor-pointer border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="CREDIT_CARD"
-                        checked={paymentMethod === 'CREDIT_CARD'}
-                        onChange={() => setPaymentMethod('CREDIT_CARD')}
-                        className="mr-3"
-                      />
-                      <HiOutlineCreditCard className="mr-2 text-primary-light dark:text-primary-dark" size={20} />
-                      <span>Credit Card</span>
-                    </label>
-
-                    <label className="flex items-center p-3 border rounded-lg cursor-pointer border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="PAYPAL"
-                        checked={paymentMethod === 'PAYPAL'}
-                        onChange={() => setPaymentMethod('PAYPAL')}
-                        className="mr-3"
-                      />
-                      <HiOutlineShieldCheck className="mr-2 text-secondary-light dark:text-secondary-dark" size={20} />
-                      <span>PayPal</span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* For demo purposes only - no actual payment processing */}
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 p-3 rounded-lg text-sm text-yellow-800 dark:text-yellow-200">
-                  <p><strong>Demo mode:</strong> No actual payment will be processed.</p>
-                </div>
-
-                <div className="flex justify-end gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowCheckout(false)}
-                    className="btn-secondary"
+                  <label htmlFor="paymentMethod" className="form-label">Payment Method</label>
+                  <select
+                    id="paymentMethod"
+                    className="form-select"
+                    value={paymentMethod}
+                    onChange={e => setPaymentMethod(e.target.value)}
+                    required
                   >
-                    Back to Cart
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={placeOrderMutation.isPending || !shippingAddress.trim()}
-                    className="btn-primary flex items-center gap-2"
-                  >
-                    {placeOrderMutation.isPending ? (
-                      <>
-                        <Loader size="sm" /> Processing...
-                      </>
-                    ) : (
-                      <>
-                        Place Order <HiArrowRight />
-                      </>
-                    )}
-                  </button>
+                    <option value="CREDIT_CARD">Credit Card</option>
+                    <option value="CASH_ON_DELIVERY">Cash on Delivery</option>
+                  </select>
                 </div>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  className="w-full mt-2"
+                  isLoading={placeOrderMutation.isLoading}
+                  icon={<HiOutlineCheckCircle size={20} />}
+                >
+                  Place Order
+                </Button>
               </form>
             </motion.div>
           )}

@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { bookService, fileService } from '../../services';
+import { bookService } from '../../services';
 import { BookDto } from '../../types/api';
 import Alert from '../../components/Alert';
 import Loader from '@/components/Loader';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiOutlinePlus, HiOutlineSearch, HiOutlinePencilAlt, HiOutlineTrash, HiX, HiCheck, HiOutlinePhotograph } from 'react-icons/hi';
-import { formatCurrency } from '@/utils/format';
+import { formatCurrency, imageUrl } from '@/utils/format';
 import Pagination from '@/components/Pagination';
 
 export default function BookManagement() {
@@ -95,10 +95,8 @@ export default function BookManagement() {
 
     // Set image preview if book has image
     if (book.image) {
-      const imageUrl = book.image.startsWith('http')
-        ? book.image
-        : `${import.meta.env.VITE_API_URL}/api/files/${book.image}`;
-      setImagePreview(imageUrl);
+      const previewUrl = imageUrl(book.image);
+      setImagePreview(previewUrl);
     } else {
       setImagePreview(null);
     }
@@ -135,8 +133,8 @@ export default function BookManagement() {
 
   // Handle image upload
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+    const file = e.target.files?.[0];
+    if (file) {
       setImageFile(file);
 
       // Create preview
@@ -293,7 +291,7 @@ export default function BookManagement() {
                           <div className="flex items-center">
                             {book.image ? (
                               <img
-                                src={book.image.startsWith('http') ? book.image : `${import.meta.env.VITE_API_URL}/api/files/${book.image}`}
+                                src={imageUrl(book.image)}
                                 alt={book.title}
                                 className="h-10 w-10 rounded object-cover mr-3"
                               />
@@ -536,9 +534,10 @@ export default function BookManagement() {
                     </label>
                     <div className="flex items-start gap-4">
                       <div className="flex-1">
-                        <div
+                        <button
+                          type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                          className="w-full border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
                         >
                           <input
                             type="file"
@@ -554,7 +553,7 @@ export default function BookManagement() {
                           <p className="text-xs text-text_secondary-light dark:text-text_secondary-dark">
                             PNG, JPG, GIF up to 5MB
                           </p>
-                        </div>
+                        </button>
                       </div>
 
                       {imagePreview && (

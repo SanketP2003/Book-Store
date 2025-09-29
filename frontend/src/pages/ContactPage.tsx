@@ -136,78 +136,78 @@ export default function ContactPage() {
             </div>
           </motion.div>
 
+          {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7 }}
           >
-            <h2 className="text-2xl font-bold mb-6">Send Us a Message</h2>
-
+            <h2 className="text-2xl font-bold mb-6">Send a Message</h2>
             {formStatus.submitted && (
-              <div className="mb-6">
-                <Alert
-                  type={formStatus.success ? 'success' : 'error'}
-                  message={formStatus.message}
-                />
-              </div>
+              <Alert
+                type={formStatus.success ? 'success' : 'error'}
+                message={formStatus.message}
+                className="mb-4"
+              />
             )}
-
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm mb-1">Your Name</label>
+                <label htmlFor="name" className="form-label">Name</label>
                 <input
-                  type="text"
+                  id="name"
                   name="name"
+                  type="text"
+                  className="form-input"
+                  placeholder="Your name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="input w-full"
                   required
                 />
               </div>
-
               <div>
-                <label className="block text-sm mb-1">Email Address</label>
+                <label htmlFor="email" className="form-label">Email</label>
                 <input
-                  type="email"
+                  id="email"
                   name="email"
+                  type="email"
+                  className="form-input"
+                  placeholder="Your email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="input w-full"
                   required
                 />
               </div>
-
               <div>
-                <label className="block text-sm mb-1">Subject</label>
-                <select
+                <label htmlFor="subject" className="form-label">Subject</label>
+                <input
+                  id="subject"
                   name="subject"
+                  type="text"
+                  className="form-input"
+                  placeholder="Subject"
                   value={formData.subject}
                   onChange={handleChange}
-                  className="input w-full"
                   required
-                >
-                  <option value="">Select a subject</option>
-                  <option value="general">General Inquiry</option>
-                  <option value="support">Customer Support</option>
-                  <option value="feedback">Feedback</option>
-                  <option value="order">Order Question</option>
-                </select>
+                />
               </div>
-
               <div>
-                <label className="block text-sm mb-1">Message</label>
+                <label htmlFor="message" className="form-label">Message</label>
                 <textarea
+                  id="message"
                   name="message"
+                  className="form-input"
+                  placeholder="Type your message..."
+                  rows={5}
                   value={formData.message}
                   onChange={handleChange}
-                  className="input w-full h-32 resize-none"
                   required
-                ></textarea>
+                />
               </div>
-
-              <button type="submit" className="btn flex items-center gap-2">
-                <Send size={16} />
-                Send Message
+              <button
+                type="submit"
+                className="btn btn-primary w-full flex items-center justify-center gap-2 mt-2"
+              >
+                <Send className="w-5 h-5" /> Send Message
               </button>
             </form>
           </motion.div>

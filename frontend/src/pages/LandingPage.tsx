@@ -4,6 +4,7 @@ import { ChevronRight, BookOpen, Award, ShoppingBag, TrendingUp } from 'lucide-r
 import { Link } from 'react-router-dom';
 import { bookService } from '../services';
 import { BookDto } from '../types/api';
+import { imageUrl } from '@/utils/format';
 
 export default function LandingPage() {
   const [featuredBooks, setFeaturedBooks] = useState<BookDto[]>([]);
@@ -151,7 +152,7 @@ export default function LandingPage() {
                     <div className="aspect-[2/3] bg-gray-100 rounded-lg overflow-hidden mb-3">
                       {book.image ? (
                         <img
-                          src={book.image.startsWith('http') ? book.image : `${import.meta.env.VITE_API_URL}/api/files/${book.image}`}
+                          src={imageUrl(book.image)}
                           alt={book.title}
                           className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
                         />

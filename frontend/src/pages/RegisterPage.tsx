@@ -98,138 +98,80 @@ const RegisterPage: React.FC = () => {
             <Link to="/" className="md:hidden flex items-center justify-center gap-2 mb-6">
               <span className="relative flex items-center justify-center w-10 h-10">
                 <span className="absolute w-8 h-8 bg-gradient-to-br from-primary-light to-highlight-light dark:from-primary-dark dark:to-highlight-dark rounded-lg -rotate-6"></span>
-                <HiOutlineBookOpen className="h-6 w-6 text-white z-10" />
+                <HiOutlineBookOpen className="h-6 w-6 text-primary-light dark:text-primary-dark z-10" />
               </span>
-              <span className="text-xl font-display font-bold text-gradient">BookStore</span>
+              <span className="text-2xl font-display font-bold text-primary-light dark:text-primary-dark">BookStore</span>
             </Link>
-
-            <h2 className="text-2xl md:text-3xl font-display font-bold text-text_primary-light dark:text-text_primary-dark mb-2">
-              Create your account
-            </h2>
+            <h2 className="page-title">Create your account</h2>
             <p className="text-text_secondary-light dark:text-text_secondary-dark">
-              Join us and discover your next favorite book
+              Join our community and start your reading journey.
             </p>
           </div>
 
-          {errorMessage && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6"
-            >
-              <Alert message={errorMessage} />
-            </motion.div>
-          )}
+          {errorMessage && <Alert type="error" message={errorMessage} className="mb-4" />}
 
           <form onSubmit={onSubmit} className="space-y-6">
             <div>
               <label htmlFor="username" className="form-label">Username</label>
-              <div className="relative">
-                <HiOutlineUser className="absolute top-1/2 -translate-y-1/2 left-3 text-gray-400 dark:text-gray-500" size={20} />
+              <div className="input-with-icon">
+                <span className="icon"><HiOutlineUser size={18} /></span>
                 <input
                   id="username"
                   type="text"
-                  placeholder="Choose a username"
                   {...register('username', { required: 'Username is required' })}
-                  className="form-input pl-10"
-                  aria-invalid={errors.username ? "true" : "false"}
+                  className="form-input"
+                  placeholder="Enter your username"
+                  autoComplete="username"
                 />
               </div>
-              {errors.username && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-sm text-error-light dark:text-error-dark mt-1"
-                >
-                  {errors.username.message}
-                </motion.p>
-              )}
+              {errors.username && <p className="text-error-light dark:text-error-dark text-sm mt-1">{errors.username.message}</p>}
             </div>
-
             <div>
               <label htmlFor="email" className="form-label">Email</label>
-              <div className="relative">
-                <HiOutlineMail className="absolute top-1/2 -translate-y-1/2 left-3 text-gray-400 dark:text-gray-500" size={20} />
+              <div className="input-with-icon">
+                <span className="icon"><HiOutlineMail size={18} /></span>
                 <input
                   id="email"
                   type="email"
-                  placeholder="Enter your email"
                   {...register('email', { required: 'Email is required' })}
-                  className="form-input pl-10"
-                  aria-invalid={errors.email ? "true" : "false"}
+                  className="form-input"
+                  placeholder="Enter your email"
                   autoComplete="email"
                 />
               </div>
-              {errors.email && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-sm text-error-light dark:text-error-dark mt-1"
-                >
-                  {errors.email.message}
-                </motion.p>
-              )}
+              {errors.email && <p className="text-error-light dark:text-error-dark text-sm mt-1">{errors.email.message}</p>}
             </div>
-
             <div>
               <label htmlFor="password" className="form-label">Password</label>
-              <div className="relative">
-                <HiOutlineLockClosed className="absolute top-1/2 -translate-y-1/2 left-3 text-gray-400 dark:text-gray-500" size={20} />
+              <div className="input-with-icon">
+                <span className="icon"><HiOutlineLockClosed size={18} /></span>
                 <input
                   id="password"
                   type="password"
-                  placeholder="Create a password"
-                  {...register('password', {
-                    required: 'Password is required',
-                    minLength: { value: 6, message: 'Password must be at least 6 characters' }
-                  })}
-                  className="form-input pl-10"
-                  aria-invalid={errors.password ? "true" : "false"}
+                  {...register('password', { required: 'Password is required' })}
+                  className="form-input"
+                  placeholder="Enter your password"
+                  autoComplete="new-password"
                 />
               </div>
-              {errors.password && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-sm text-error-light dark:text-error-dark mt-1"
-                >
-                  {errors.password.message}
-                </motion.p>
-              )}
+              {errors.password && <p className="text-error-light dark:text-error-dark text-sm mt-1">{errors.password.message}</p>}
             </div>
-
-            <motion.button
+            <Button
               type="submit"
-              disabled={isSubmitting}
-              className="btn btn-primary w-full flex items-center justify-center gap-2 py-2.5"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              variant="primary"
+              size="lg"
+              className="w-full mt-2"
+              isLoading={isSubmitting}
+              icon={<HiOutlineUserAdd size={20} />}
             >
-              {isSubmitting ? (
-                <>
-                  <span className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin"></span>
-                  <span>Creating account...</span>
-                </>
-              ) : (
-                <>
-                  <HiOutlineUserAdd size={20} />
-                  <span>Create Account</span>
-                </>
-              )}
-            </motion.button>
-
-            <div className="text-center text-text_secondary-light dark:text-text_secondary-dark">
-              <p>
-                Already have an account?{' '}
-                <Link
-                  to="/login"
-                  className="text-primary-light dark:text-primary-dark font-medium hover:underline inline-flex items-center"
-                >
-                  <HiOutlineArrowSmLeft className="mr-1" /> Sign in
-                </Link>
-              </p>
-            </div>
+              Create Account
+            </Button>
           </form>
+
+          <div className="mt-6 text-center text-text_secondary-light dark:text-text_secondary-dark">
+            Already have an account?{' '}
+            <Link to="/login" className="text-primary-light dark:text-primary-dark font-medium hover:underline">Sign in</Link>
+          </div>
         </motion.div>
       </div>
     </div>
